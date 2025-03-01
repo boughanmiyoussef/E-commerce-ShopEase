@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        "rabbit-red": '#ea2e0e',
+        "carrot-red": '#ea2e0e',
       },
     },
   },
