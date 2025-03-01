@@ -23,14 +23,13 @@ const App = () => {
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatpath: true }}>
       <Toaster position="top-right" />
       <Routes>
-        {/* Route for User Layout */}
         <Route path="/" element={<UserLayout />}>
           <Route index element={<Home />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="profile" element={<Profile />} />
           <Route path="collections/:collection" element={<CollectionPage />} />
-          <Route path="product/:id" element={<ProductDetails />} /> {/* Fixed: Removed backslash */}
+          <Route path="product/:id" element={<ProductDetails />} /> 
           <Route path="checkout" element={<Checkout />} />
           <Route path="order-confirmation" element={<OrderConfirmationPage />} />
           <Route path="my-orders" element={<MyOrdersPage />} />
