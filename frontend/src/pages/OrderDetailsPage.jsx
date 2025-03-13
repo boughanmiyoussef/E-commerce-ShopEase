@@ -1,41 +1,21 @@
 import { Link, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchOrderDetails } from "../redux/slices/orderSlice";
 
 const OrderDetailsPage = () => {
   const { id } = useParams();
-  const [orderDetails, setOrderDetails] = useState(null);
+  const dispatch = useDispatch();
+
+  const { orderDetails, loading, error } = useSelector((state) => state.orders);
+  const { user } = useSelector((state) => state.auth); // Get the user from the Redux store
 
   useEffect(() => {
-    const mockOrderDetails = {
-      _id: id,
-      createdAt: new Date(),
-      isPaid: true,
-      isDelivered: false,
-      paymentMethod: "PayPal",
-      shippingMethod: "Standard",
-      shippingAddress: { // Added to match render
-        city: "Los Angeles",
-        country: "USA"
-      },
-      orderItems: [
-        {
-          productId: "1",
-          name: "T-Shirt",
-          image: "https://picsum.photos/200/200?random=1",
-          price: 20,
-          quantity: 2,
-        },
-        {
-          productId: "2",
-          name: "Shoes",
-          image: "https://picsum.photos/200/200?random=2",
-          price: 75,
-          quantity: 1,
-        },
-      ]
-    };
-    setOrderDetails(mockOrderDetails);
-  }, [id]);
+    dispatch(fetchOrderDetails(id));
+  }, [dispatch, id]);
+
+  if (loading) return <p>Loading ...</p>;
+  if (error) return <p>Error : {error}</p>;
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
@@ -85,56 +65,73 @@ const OrderDetailsPage = () => {
 
             <div>
               <h4 className="text-lg font-semibold mb-2">Shipping Info</h4>
-              <p>Shipping Method: {orderDetails.shippingMethod}</p>
+              {/* <p>Shipping Method: {orderDetails.shippingMethod}</p> */}
               <p>
                 Address: {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.country}
               </p>
             </div>
           </div>
-        {/* Product List  */}
-                    <div className="overflow-x-auto">
-                        <h4 className="text-lg font-semibold mb-4">Products</h4>
-                        <table className="min-w-full text-gray-600 mb-4">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="py-2 px-4">Name</th>
-                                        <th className="py-2 px-4">Unit Price</th>
-                                        <th className="py-2 px-4">Quantity</th>
-                                        <th className="py-2 px-4">Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orderDetails.orderItems.map((item) => (
-                                       <tr key={item.productId} className="border-b"> 
-                                            <td className="py-2 px-4 flex items-center">
-                                                <img 
-                                                src={item.image} 
-                                                alt={item.name} 
-                                                className="w-12 h-12 object-cover rounded-lg mr-4" 
-                                                />
-                                                <Link 
-                                                to={`/product/${item.productId}`}
-                                                className="text-blue-500 hover:underline"
-                                                >
-                                                    {item.name}
-                                                </Link>
-                                            </td>
-                                            <td className="py-2 px-4">${item.price}</td>
-                                            <td className="py-2 px-4">${item.quantity}</td>
-                                            <td className="py-2 px-4">${item.price * item.quantity}</td>
-                                        </tr>  
-                                    ))}
-                                </tbody>
 
-                        </table>
-                    </div>
-                    {/* Back To Orders Link */}
-                    <Link to="/my-orders"
-                        className="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-700 rounded-md"
-                    >
-                        Back to Orders
-                    </Link>
+          {/* Product List */}
+          <div className="overflow-x-auto">
+  <h4 className="text-lg font-semibold mb-4">Products</h4>
+  <table className="min-w-full text-gray-600 mb-4">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="py-2 px-4">Product</th>
+        <th className="py-2 px-4">Unit Price</th>
+        <th className="py-2 px-4">Quantity</th>
+        <th className="py-2 px-4">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {orderDetails.orderItems.map((item) => (
+        <tr key={item.productId} className="border-b">
+          {/* Product Name and Image */}
+          <td className="py-2 px-4">
+            <div className="flex items-center">
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-12 h-12 object-cover rounded-lg mr-4"
+              />
+              <Link
+                to={`/product/${item.productId}`} // Link to product details
+                className="text-blue-500 hover:underline"
+              >
+                {item.name}
+              </Link>
+            </div>
+          </td>
+          {/* Unit Price */}
+          <td className="py-2 px-4">${item.price}</td>
+          {/* Quantity */}
+          <td className="py-2 px-4">{item.quantity}</td>
+          {/* Total Price */}
+          <td className="py-2 px-4">${item.price * item.quantity}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
+          {/* Buttons Section */}
+          <div className="flex gap-4">
+            <Link
+              to="/my-orders"
+              className="inline-block px-4 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-700 rounded-md"
+            >
+              Back to Orders
+            </Link>
+            {user && user.role === 'admin' && ( // Conditionally render the button for admin
+              <Link
+                to="/admin/orders"
+                className="inline-block px-4 py-2 text-sm font-medium text-white bg-gray-500 hover:bg-gray-700 rounded-md"
+              >
+                Go to Admin Orders
+              </Link>
+            )}
+          </div>
         </div>
       )}
     </div>

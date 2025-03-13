@@ -1,81 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUserOrders } from '../redux/slices/orderSlice'; // Adjust the import path accordingly
 
 const MyOrdersPage = () => {
-  const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { orders, loading, error } = useSelector((state) => state.orders);
 
   useEffect(() => {
-    setTimeout(() => {
-      const mockOrders = [
-        {
-          _id: 12345789,
-          createdAt: new Date(),
-          shippingAddress: { city: "New York", country: "USA" },
-          orderItems: [
-            {
-              name: "Stylish Jacket",
-              image: "https://picsum.photos/500/500?random=1",
-            },
-          ],
-          totalPrice: 100,
-          isPaid: true,
-        },
-        {
-          _id: 12345790,
-          createdAt: new Date(),
-          shippingAddress: { city: "Los Angeles", country: "USA" },
-          orderItems: [
-            {
-              name: "Floral Blouse",
-              image: "https://picsum.photos/500/500?random=2",
-            },
-            {
-              name: "Silk Tank Top",
-              image: "https://picsum.photos/500/500?random=3",
-            },
-          ],
-          totalPrice: 105,
-          isPaid: false,
-        },
-        {
-          _id: 12345791,
-          createdAt: new Date(),
-          shippingAddress: { city: "London", country: "UK" },
-          orderItems: [
-            {
-              name: "Knit Sweater",
-              image: "https://picsum.photos/500/500?random=4",
-            },
-          ],
-          totalPrice: 80,
-          isPaid: true,
-        },
-        {
-          _id: 12345792,
-          createdAt: new Date(),
-          shippingAddress: { city: "Toronto", country: "Canada" },
-          orderItems: [
-            {
-              name: "Crop Top",
-              image: "https://picsum.photos/500/500?random=5",
-            },
-            {
-              name: "Denim Jacket",
-              image: "https://picsum.photos/500/500?random=6",
-            },
-          ],
-          totalPrice: 125,
-          isPaid: true,
-        },
-      ];
-      setOrders(mockOrders);
-    }, 1000);
-  }, []);
+    dispatch(fetchUserOrders());
+  }, [dispatch]);
 
   const handleRowClick = (orderId) => {
     navigate(`/order/${orderId}`);
   };
+
+  if (loading) return <p>Loading ....</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
@@ -112,13 +54,13 @@ const MyOrdersPage = () => {
                     #{order._id}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
-                    {new Date(order.createdAt).toLocaleDateString()}{" "}
+                    {new Date(order.createdAt).toLocaleDateString()}{' '}
                     {new Date(order.createdAt).toLocaleTimeString()}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
                     {order.shippingAddress
                       ? `${order.shippingAddress.city}, ${order.shippingAddress.country}`
-                      : "N/A"}
+                      : 'N/A'}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
                     {order.orderItems.length}
@@ -130,7 +72,7 @@ const MyOrdersPage = () => {
                         order.isPaid ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                       } px-2 py-1 rounded-full text-xs sm:text-sm font-medium`}
                     >
-                      {order.isPaid ? 'Paid' : 'Pending'} {/* Fixed: Added quotes around 'Pending' */}
+                      {order.isPaid ? 'Paid' : 'Pending'}
                     </span>
                   </td>
                 </tr>

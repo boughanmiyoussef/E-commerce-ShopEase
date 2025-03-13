@@ -1,52 +1,75 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react"; // Added useEffect import
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  addUser,
+  deleteUser,
+  fetchUsers,
+  updateUser
+} from "../../redux/slices/adminSlice";
 
 const UserManagement = () => {
-  const users = [
-    {
-     _id: 12345678,
-      name: "John Doe",
-      email: "John@example.com",
-      role: "admin",
-    },
-  ];
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { user } = useSelector((state) => state.auth);
+
+  const { users, loading, error } = useSelector((state) => state.admin);
+
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  useEffect(() => {
+    if (user && user.role === "admin") {
+      dispatch(fetchUsers());
+    }
+  }, [dispatch, user]);
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    role: "customer",
+    role: "customer"
   });
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    dispatch(addUser(formData));
+
     setFormData({
       name: "",
       email: "",
       password: "",
-      role: "customer",
+      role: "customer"
     });
   };
 
   const handleRoleChange = (userId, newRole) => {
-    console.log({id: userId, role: newRole});
-  }
+    dispatch(updateUser({ id: userId, role: newRole }));
+  };
 
   const handleDeleteUser = (userId) => {
     if (window.confirm("Are You Sure You Want To Delete This User ?")) {
-        console.log("Deleting User With ID :", userId)
+      dispatch(deleteUser(userId));
     }
-  }
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6">User Management</h2>
+      {loading && <p>Loading ...</p>}
+      {error && <p>Error : {error} ...</p>}
+
       <div className="p-6 rounded-lg mb-6">
         <h3 className="text-lg font-bold mb-4">Add New User</h3>
         <form onSubmit={handleSubmit}>
@@ -115,7 +138,7 @@ const UserManagement = () => {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user._id} >
+              <tr key={user._id}>
                 <td className="py-2 px-4">{user.name}</td>
                 <td className="py-2 px-4">{user.email}</td>
                 <td className="py-2 px-4">
@@ -129,9 +152,10 @@ const UserManagement = () => {
                   </select>
                 </td>
                 <td className="py-2 px-4">
-                  <button 
-                  onClick={()=>handleDeleteUser(user._id)}
-                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600">
+                  <button
+                    onClick={() => handleDeleteUser(user._id)}
+                    className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+                  >
                     Delete
                   </button>
                 </td>

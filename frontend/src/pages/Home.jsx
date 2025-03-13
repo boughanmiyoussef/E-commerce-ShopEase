@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Hero from '../components/Layout/Hero';
 import GenderCollectionSection from '../components/Products/GenderCollectionSection';
 import NewArrivals from '../components/Products/NewArrivals';
@@ -6,118 +6,74 @@ import ProductDetails from '../components/Products/ProductDetails';
 import ProductGrid from '../components/Products/ProductGrid';
 import FeaturedCollection from '../components/Products/FeaturedCollection';
 import FeaturesSection from '../components/Products/FeaturesSection';
-
-const placeHolderProducts = [
-  {
-    _id: 1,
-    name: 'Floral Blouse',
-    price: 45,
-    images: [
-      {
-        url: 'https://picsum.photos/500/500?random=1',
-        altText: 'Floral Blouse',
-      },
-    ],
-  },
-  {
-    _id: 2,
-    name: 'Silk Tank Top',
-    price: 60,
-    images: [
-      {
-        url: 'https://picsum.photos/500/500?random=2',
-        altText: 'Silk Tank Top',
-      },
-    ],
-  },
-  {
-    _id: 3,
-    name: 'Knit Sweater',
-    price: 80,
-    images: [
-      {
-        url: 'https://picsum.photos/500/500?random=3',
-        altText: 'Knit Sweater',
-      },
-    ],
-  },
-  {
-    _id: 4,
-    name: 'Crop Top',
-    price: 35,
-    images: [
-      {
-        url: 'https://picsum.photos/500/500?random=4',
-        altText: 'Crop Top',
-      },
-    ],
-  },
-  {
-    _id: 5,
-    name: 'Off-Shoulder Top',
-    price: 50,
-    images: [
-      {
-        url: 'https://picsum.photos/500/500?random=5',
-        altText: 'Off-Shoulder Top',
-      },
-    ],
-  },
-  {
-    _id: 6,
-    name: 'Linen Shirt',
-    price: 70,
-    images: [
-      {
-        url: 'https://picsum.photos/500/500?random=6',
-        altText: 'Linen Shirt',
-      },
-    ],
-  },
-  {
-    _id: 7,
-    name: 'Turtleneck Top',
-    price: 55,
-    images: [
-      {
-        url: 'https://picsum.photos/500/500?random=7',
-        altText: 'Turtleneck Top',
-      },
-    ],
-  },
-  {
-    _id: 8,
-    name: 'Graphic Tee',
-    price: 30,
-    images: [
-      {
-        url: 'https://picsum.photos/500/500?random=8',
-        altText: 'Graphic Tee',
-      },
-    ],
-  },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProductsByFilters } from '../redux/slices/productsSlice';
+import axios from 'axios';
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const { products, loading, error } = useSelector((state) => state.products);
+  const [bestSellerProduct, setBestSellerProduct] = useState(null);
+  const [topWearsForWomen, setTopWearsForWomen] = useState([]);
+
+  useEffect(() => {
+    // Fetch Top Wears For Women
+    dispatch(
+      fetchProductsByFilters({
+        gender: "Women",
+        category: "Top Wear", // Changed from "Bottom Wear" to "Top Wear"
+        limit: 8,
+      })
+    ).then((action) => {
+      if (action.payload) {
+        setTopWearsForWomen(action.payload); // Set the fetched products to state
+      }
+    });
+
+    // Fetch best seller product
+    const fetchBestSeller = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/products/best-seller`
+        );
+        console.log("Best Seller Response:", response.data); // Log the response
+        setBestSellerProduct(response.data);
+      } catch (error) {
+        console.error("Error fetching best seller product:", error);
+      }
+    };
+    fetchBestSeller();
+  }, [dispatch]);
+
   return (
     <div>
       <Hero />
       <GenderCollectionSection />
       <NewArrivals />
+
       {/* Best Seller */}
-      <h2 className="text-3xl text-center font-bold">Best Seller</h2>
-      <ProductDetails />
+      <div className="container mx-auto mt-20 px-4">
+        <h2 className="text-3xl text-center font-bold">Best Seller</h2>
+        {bestSellerProduct && bestSellerProduct._id ? (
+          <ProductDetails productId={bestSellerProduct._id} />
+        ) : (
+          <p>No best seller product found.</p>
+        )}
+      </div>
+
       {/* Top Wears For Women */}
       <div className="container mx-auto mt-20 px-4">
         <h2 className="text-3xl font-semibold text-gray-800 text-center mb-8">
           Top Wears For Women
         </h2>
         <div className="bg-gray-50 py-10 rounded-lg shadow-sm">
-          <ProductGrid products={placeHolderProducts} />
+          <ProductGrid products={topWearsForWomen} />
         </div>
-        <FeaturedCollection/>
-        <FeaturesSection/>
       </div>
+
+      {/* Featured Collection and Features Section */}
+      <FeaturedCollection />
+      <FeaturesSection />
     </div>
   );
 };

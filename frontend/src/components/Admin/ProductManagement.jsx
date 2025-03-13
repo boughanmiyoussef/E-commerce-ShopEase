@@ -1,20 +1,38 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { deleteProduct, fetchAdminProducts } from "../../redux/slices/adminProductSlice";
 
 const ProductManagement = () => {
-  const products = [
-    {
-      _id: 123456,
-      name: "Shirt",
-      price: 110,
-      sku: "1234567890",
-    },
-  ];
+  const dispatch = useDispatch();
 
-  const handleDelete =(id) => {
-    if (window.confirm('Are you sure you want to delete ?')){
-        console.log('Deleting product with id:', id);
+  // Correctly access the adminProducts slice of the state
+  const { products = [], loading, error } = useSelector(
+    (state) => state.adminProducts || {}
+  );
+
+  // Log the entire Redux state and products
+  const state = useSelector((state) => state);
+  console.log("Entire Redux State:", state);
+  console.log("Products in component:", products);
+  console.log("Is Array?", Array.isArray(products), "Length:", products.length);
+
+  useEffect(() => {
+    dispatch(fetchAdminProducts());
+  }, [dispatch]);
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      dispatch(deleteProduct(id));
     }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   return (
@@ -33,19 +51,52 @@ const ProductManagement = () => {
           <tbody>
             {products.length > 0 ? (
               products.map((product) => (
-                <tr key={product._id} className='hover:bg-gray-50 cursor-pointer'>
-                  <td className="py-2 px-4">{product.name}</td>
-                  <td className="py-2 px-4">{product.price}</td>
-                  <td className="py-2 px-4">{product.sku}</td>
+                <tr
+                  key={product._id}
+                  className="hover:bg-gray-50 cursor-pointer"
+                >
+                  {/* Clickable Product Name */}
                   <td className="py-2 px-4">
-                    <Link 
-                    to={`/admin/products/${product._id}/edit`}
-                    className="bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded">
+                    <Link
+                      to={`/product/${product._id}`} // Updated to match your product details route
+                      className="block w-full h-full"
+                    >
+                      {product.name}
+                    </Link>
+                  </td>
+
+                  {/* Clickable Price */}
+                  <td className="py-2 px-4">
+                    <Link
+                      to={`/product/${product._id}`} // Updated to match your product details route
+                      className="block w-full h-full"
+                    >
+                      ${product.price}
+                    </Link>
+                  </td>
+
+                  {/* Clickable SKU */}
+                  <td className="py-2 px-4">
+                    <Link
+                      to={`/product/${product._id}`} // Updated to match your product details route
+                      className="block w-full h-full"
+                    >
+                      {product.sku}
+                    </Link>
+                  </td>
+
+                  {/* Actions (Edit and Delete) */}
+                  <td className="py-2 px-4">
+                    <Link
+                      to={`/admin/products/${product._id}/edit`}
+                      className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+                    >
                       Edit
                     </Link>
-                    <button 
-                    onClick={() => handleDelete(product._id)}
-                    className="bg-red-500 hover:bg-red-400 text-white py-2 px-4 rounded ml-2">
+                    <button
+                      onClick={() => handleDelete(product._id)}
+                      className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded ml-2"
+                    >
                       Delete
                     </button>
                   </td>
@@ -53,9 +104,7 @@ const ProductManagement = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="py-4 px-4 text-center text-gray-500">
-                  No products found
-                </td>
+                <td colSpan="4">No products found</td>
               </tr>
             )}
           </tbody>
