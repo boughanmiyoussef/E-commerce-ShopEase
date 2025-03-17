@@ -3,7 +3,7 @@ import { IoMdClose } from "react-icons/io";
 import CartContent from "../Cart/CartContent";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { clearCart } from "../../redux/slices/cartSlice"; // Import the clearCart action
+import { clearCart } from "../../redux/slices/cartSlice";
 
 const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
   const navigate = useNavigate();
@@ -11,9 +11,8 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
   const { user, guestId } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
   const userId = user ? user._id : null;
-  const [errorMessage, setErrorMessage] = useState(null); // State for error messages
+  const [errorMessage, setErrorMessage] = useState(null);
 
-  // Function to validate stock before proceeding to checkout
   const validateStock = () => {
     if (!cart || !cart.products || cart.products.length === 0) {
       setErrorMessage("Your cart is empty. Add items to proceed to checkout.");
@@ -21,36 +20,32 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
     }
 
     for (const item of cart.products) {
-      if (item.quantity > item.countInStock) {
+      if (item.quantity > (item.countInStock || 0)) {
         setErrorMessage(
-          `You cannot exceed the available stock of ${item.countInStock} for ${item.name}.`
+          `You cannot exceed the available stock of ${item.countInStock || 0} for ${item.name}.`
         );
         return false;
       }
     }
 
-    setErrorMessage(null); // Clear any previous error messages
+    setErrorMessage(null);
     return true;
   };
 
-  // Function to handle checkout
   const handleCheckout = () => {
     if (!validateStock()) {
-      return; // Stop if stock validation fails
+      return;
     }
-
     if (!user) {
-      navigate("/login?redirect=checkout"); // Redirect to login with checkout as the next step
+      navigate("/login?redirect=checkout");
     } else {
-      navigate("/checkout"); // Redirect to checkout
+      navigate("/checkout");
     }
-
-    toggleCartDrawer(); // Close the drawer after navigation
+    toggleCartDrawer();
   };
 
-  // Function to clear the cart
   const handleClearCart = () => {
-    dispatch(clearCart()); // Dispatch the clearCart action
+    dispatch(clearCart());
   };
 
   return (
@@ -59,14 +54,11 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
         drawerOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
-      {/* Close Button */}
       <div className="flex justify-end p-4">
         <button onClick={toggleCartDrawer}>
           <IoMdClose className="h-6 w-6 text-gray-600 hover:text-gray-800 transition duration-200" />
         </button>
       </div>
-
-      {/* Cart Content */}
       <div className="flex-grow p-4 overflow-y-auto">
         <h2 className="text-xl font-semibold mb-4">Your Cart</h2>
         {cart && cart.products?.length > 0 ? (
@@ -75,16 +67,12 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
           <p>Your cart is empty</p>
         )}
       </div>
-
-      {/* Checkout and Clear Cart Buttons */}
       <div className="p-4 bg-white sticky bottom-0">
-        {/* Display error message if stock validation fails */}
         {errorMessage && (
           <div className="text-red-500 text-sm mb-4 p-2 bg-red-50 rounded">
             {errorMessage}
           </div>
         )}
-
         {cart && cart.products?.length > 0 ? (
           <>
             <button
