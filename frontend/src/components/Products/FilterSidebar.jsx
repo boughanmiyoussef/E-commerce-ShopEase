@@ -20,7 +20,16 @@ const FilterSidebar = () => {
 
   const categories = ["Top Wear", "Bottom Wear"];
   const colors = [
-    "Red", "Blue", "Black", "Green", "Yellow", "Gray", "White", "Pink", "Beige", "Navy",
+    "Red",
+    "Blue",
+    "Green",
+    "Yellow",
+    "Black",
+    "Orange",
+    "White",
+    "Gray",
+    "Purple",
+    "Brown",
   ];
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
   const materials = [
