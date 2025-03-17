@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BsList, BsPerson, BsCart, BsBoxArrowInRight } from "react-icons/bs";
+import { BsList, BsPerson, BsCart, BsBoxArrowInRight, BsShop } from "react-icons/bs";
+
 import { MdSearch, MdClose } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import CartDrawer from "../Layout/CartDrawer";
@@ -18,15 +19,12 @@ const Navbar = () => {
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
 
-  // Calculate cart item count
   const cartItemCount = cart?.products?.reduce((total, product) => total + product.quantity, 0) || 0;
 
-  // Toggle navigation drawer
   const toggleNavDrawer = () => {
     setNavDrawerBar(!navDrawerBar);
   };
 
-  // Toggle search bar
   const handleSearchToggle = () => {
     setIsSearchOpen(!isSearchOpen);
     if (!isSearchOpen && searchInputRef.current) {
@@ -34,12 +32,10 @@ const Navbar = () => {
     }
   };
 
-  // Toggle cart drawer
   const toggleCartDrawer = () => {
     setCartDrawerOpen(!cartDrawerOpen);
   };
 
-  // Handle search form submission
   const handleSearch = (e) => {
     e.preventDefault();
     dispatch(setFilters({ search: searchTerm }));
@@ -139,6 +135,9 @@ const Navbar = () => {
             >
               <MdSearch className="h-6 w-6" />
             </button>
+            <Link to="/collections/all" aria-label="Login" className="hover:text-gray-800 transition duration-200">
+              <BsShop className="h-6 w-6" />
+            </Link>
             <Link to="/login" aria-label="Login" className="hover:text-gray-800 transition duration-200">
               <BsBoxArrowInRight className="h-6 w-6" />
             </Link>
