@@ -100,7 +100,7 @@ export const removeFromCart = createAsyncThunk(
   }
 );
 
-// Merge guest cart into user cart when user logs in
+// Merge guest cart into user cart when user
 export const mergeCart = createAsyncThunk(
   "cart/mergeCart",
   async ({ guestId, user}, { rejectWithValue }) => {
