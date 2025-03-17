@@ -2,7 +2,9 @@ const express = require("express");
 const Product = require("../models/Product");
 const { protect, admin } = require("../middleware/authMiddleware");
 const router = express.Router();
-// @route POST /api/products/
+// @route POST /api/admin/products
+// @desc Create a new product (admin only)
+// @access Private/Admin
 router.post("/", protect, admin, async (req, res) => {
   try {
     const {
@@ -26,6 +28,7 @@ router.post("/", protect, admin, async (req, res) => {
       dimensions,
       sku
     } = req.body;
+
     const product = new Product({
       name,
       description,
@@ -47,6 +50,7 @@ router.post("/", protect, admin, async (req, res) => {
       dimensions,
       user: req.user._id
     });
+
     const createdProduct = await product.save();
     res.status(201).json(createdProduct);
   } catch (error) {
@@ -127,76 +131,105 @@ router.delete("/:id", protect, admin, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-// @route PUT /api/products/:id/stock
-// @desc Update product stock after an order
-// @access Private/Admin
-// productRoutes.js
+
+// @route   PUT /api/products/:id/stock
+// @desc    Update product stock after an order, delete if stock reaches 0
+// @access  Private/Admin
 router.put("/:id/stock", protect, admin, async (req, res) => {
-    try {
-      const { quantity } = req.body;
-      const product = await Product.findById(req.params.id);
+  console.log("PUT /stock called with:", {
+    id: req.params.id,
+    body: req.body,
+    user: req.user
+  });
+
+  try {
+    const { quantity } = req.body;
+    console.log("Quantity received:", quantity);
+
+    // Find the product by ID
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      console.log("Product not found:", req.params.id);
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    console.log("Product before update - countInStock:", product.countInStock);
+
+    // Check if the requested quantity exceeds available stock
+    if (quantity > product.countInStock) {
+      return res.status(400).json({ message: "Insufficient stock" });
+    }
+
+    // Update the product's stock
+    product.countInStock -= quantity;
+    console.log("Product after update - countInStock:", product.countInStock);
+
+    // If stock reaches 0, delete the product
+    if (product.countInStock === 0) {
+      await product.deleteOne();
+      console.log("Product deleted due to zero stock:", req.params.id);
+      return res.json({
+        message: "Product stock depleted and deleted",
+        product
+      });
+    }
+
+    // Save the updated product if stock > 0
+    await product.save();
+    console.log("Product saved successfully:", product);
+
+    // Return success response
+    res.json({ message: "Stock updated successfully", product });
+  } catch (error) {
+    console.error("Error in stock update:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
+// productRoutes.js
+router.post("/orders", protect, async (req, res) => {
+  try {
+    const { products } = req.body;
+
+    // Validate and deduct stock for each product
+    for (const item of products) {
+      const product = await Product.findById(item.productId);
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        return res
+          .status(404)
+          .json({ message: `Product ${item.productId} not found` });
       }
-      if (quantity > product.countInStock) {
-        return res.status(400).json({ message: "Insufficient stock" });
+      if (product.countInStock < item.quantity) {
+        return res
+          .status(400)
+          .json({ message: `Insufficient stock for ${product.name}` });
       }
-  
+
       // Deduct stock
-      product.countInStock -= quantity;
-  
+      product.countInStock -= item.quantity;
+
       // Delete product if stock is zero
       if (product.countInStock === 0) {
         await product.deleteOne();
-        return res.json({ message: "Product stock depleted and deleted", product });
+      } else {
+        await product.save();
       }
-  
-      await product.save();
-      res.json({ message: "Stock updated successfully", product });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Server Error");
     }
-  });
-router.post("/orders", protect, async (req, res) => {
-    try {
-      const { products } = req.body;
-  
-      // Validate and deduct stock for each product
-      for (const item of products) {
-        const product = await Product.findById(item.productId);
-        if (!product) {
-          return res.status(404).json({ message: `Product ${item.productId} not found` });
-        }
-        if (product.countInStock < item.quantity) {
-          return res.status(400).json({ message: `Insufficient stock for ${product.name}` });
-        }
-  
-        // Deduct stock
-        product.countInStock -= item.quantity;
-  
-        // Delete product if stock is zero
-        if (product.countInStock === 0) {
-          await product.deleteOne();
-        } else {
-          await product.save();
-        }
-      }
-  
-      // Create the order
-      const order = new Order({
-        user: req.user._id,
-        products,
-        totalPrice: req.body.totalPrice,
-        shippingAddress: req.body.shippingAddress,
-      });
-      await order.save();
-      res.status(201).json(order);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Server Error");
-    }
-  });
+
+    // Create the order
+    const order = new Order({
+      user: req.user._id,
+      products,
+      totalPrice: req.body.totalPrice,
+      shippingAddress: req.body.shippingAddress
+    });
+    await order.save();
+    res.status(201).json(order);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
+});
 // @route GET /api/products
 // @desc get all products with optional query filters
 // @access public
