@@ -68,20 +68,28 @@ export const updateProduct = createAsyncThunk(
 );
 
 
-// Async thunk to update product stock after an order
 export const updateProductStock = createAsyncThunk(
   "products/updateStock",
-  async ({ productId, quantity }) => {
-    const response = await axios.put(
-      `${import.meta.env.VITE_BACKEND_URL}/api/products/${productId}/stock`,
-      { quantity },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        },
-      }
-    );
-    return response.data;
+  async ({ productId, quantity }, { rejectWithValue }) => {
+    try {
+      console.log("Updating stock for product:", productId, "with quantity:", quantity);
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/products/${productId}/stock`,
+        { quantity },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+
+      console.log("Stock update response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating stock:", error.response?.data || error.message);
+      return rejectWithValue(error.response?.data || error.message);
+    }
   }
 );
 
@@ -119,6 +127,9 @@ const productsSlice = createSlice({
     },
   },
   reducers: {
+    setFilters: (state, action) => {
+      state.filters = { ...state.filters, ...action.payload };
+    },
     addToCart: (state, action) => {
       const { product, quantity, size, color } = action.payload;
       const existingItem = state.cart.products.find(
