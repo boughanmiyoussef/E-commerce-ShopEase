@@ -76,7 +76,7 @@ The project is divided into two main parts:
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/boughanmiyoussef/ShopEase.git
+   git clone https://github.com/boughanmiyoussef/E-commerce-ShopEase.git
    cd ShopEase
    ```
 
@@ -96,7 +96,7 @@ The project is divided into two main parts:
 Create a `.env` file in the backend directory with the following content:
    ```env
    PORT=9000
-   MONGO_URI=mongodb://localhost:27017/shopease
+   MONGO_URI=mongodb://localhost:27017/E-commerce-ShopEase
    JWT_SECRET=your_jwt_secret_key_here
    ```
    ```
