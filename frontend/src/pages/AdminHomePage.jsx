@@ -18,9 +18,9 @@ const AdminHomePage = () => {
   } = useSelector((state) => state.adminOrders);
 
   useEffect(() => {
-    dispatch(fetchAdminProducts()); // Removed extra parentheses
+    dispatch(fetchAdminProducts());
     dispatch(fetchAllOrders());
-  }, [dispatch]); // Added dependency array to prevent infinite loop
+  }, [dispatch]);
 
   return (
     <div className="max-w-7xl mx-auto p-6">
