@@ -3,6 +3,7 @@ import heroImg from '../../assets/shopease-hero.jpg'
 import { Link } from 'react-router-dom';
 
 const Hero = () => {
+  
   return (
     <section className="relative">
       <img
