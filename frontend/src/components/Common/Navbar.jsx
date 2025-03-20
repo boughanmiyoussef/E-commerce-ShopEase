@@ -47,7 +47,6 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Sticky Search Bar */}
       <div
         className={`fixed top-0 left-0 w-full bg-white bg-opacity-95 backdrop-blur-sm shadow-md z-50 transform transition-transform duration-300 ${
           isSearchOpen ? "translate-y-0" : "-translate-y-full"
@@ -85,10 +84,8 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Main Navbar */}
       <nav className="bg-white shadow-sm sticky top-0 z-40">
         <div className="container mx-auto flex items-center justify-between py-4 px-6 transition-all duration-300">
-          {/* Left Logo */}
           <div>
             <Link
               to="/"
@@ -126,7 +123,6 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Right - Icons and Admin Link */}
           <div className="flex items-center space-x-6">
             <button
               onClick={handleSearchToggle}
