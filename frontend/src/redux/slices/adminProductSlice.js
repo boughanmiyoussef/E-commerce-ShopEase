@@ -4,19 +4,23 @@ import axios from "axios";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 const USER_TOKEN = `Bearer ${localStorage.getItem("userToken")}`;
 
-// Async thunk to fetch admin products
-  export const fetchAdminProducts = createAsyncThunk(
-    "adminProducts/fetchProducts",
-    async () => {
+export const fetchAdminProducts = createAsyncThunk(
+  "adminProducts/fetchProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const USER_TOKEN = `Bearer ${localStorage.getItem("userToken")}`;
       const response = await axios.get(`${API_URL}/api/admin/products`, {
         headers: {
-          Authorization: USER_TOKEN
-        }
+          Authorization: USER_TOKEN,
+        },
       });
-      console.log("Backend Response:", response.data); // Log the response
-      return response.data; // If the request was successful, return the products data
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
     }
-  );
+  }
+);
+
 
 // Async thunk to create a new product
 export const createProduct = createAsyncThunk(
@@ -87,7 +91,7 @@ const adminProductSlice = createSlice({
       })
       // Create a new product
       .addCase(createProduct.fulfilled, (state, action) => {
-        state.products.push(action.payload);
+        state.products.push(action.payload); // Add the new product to the list
       })
       // Update product
       .addCase(updateProduct.fulfilled, (state, action) => {
