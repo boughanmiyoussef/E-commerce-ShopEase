@@ -4,22 +4,31 @@ import login from "../assets/login.webp";
 import { loginUser } from "../redux/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { mergeCart } from "../redux/slices/cartSlice";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { userId, guestId } = useSelector((state) => state.auth);
+  const { userId, guestId, error: authError } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
 
-  // Get redirect parameter and check if it's checkout or something
   const redirect = new URLSearchParams(location.search).get("redirect") || "/";
   const isCheckoutRedirect = redirect.includes("checkout");
 
-  // Redirect if user is already logged in
+  // Handle login errors
+  useEffect(() => {
+    if (authError) {
+      setError(authError); // Set error message from Redux store
+    }
+  }, [authError]);
+
+  // Redirect after login
   useEffect(() => {
     if (userId) {
       if (cart?.products.length > 0 && guestId) {
@@ -35,6 +44,11 @@ const Login = () => {
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError("");
+    if (!email || !password) {
+      setError("Please fill in all fields.");
+      return;
+    }
     dispatch(loginUser({ email, password }));
   };
 
@@ -53,6 +67,15 @@ const Login = () => {
           <p className="text-center mb-6">
             Enter Your Email And Password To Login
           </p>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-2 bg-red-100 text-red-600 text-sm rounded">
+              {error}
+            </div>
+          )}
+
+          {/* Email Input */}
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2">Email</label>
             <input
@@ -63,22 +86,38 @@ const Login = () => {
               placeholder="Enter Your Email"
             />
           </div>
-          <div className="mb-4">
+
+          {/* Password Input */}
+          <div className="mb-4 relative">
             <label className="block text-sm font-semibold mb-2">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border rounded"
-              placeholder="Enter Your Password"
-            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-2 border rounded pr-10"
+                placeholder="Enter Your Password"
+              />
+              {/* Eye Icon */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-black text-white p-2 rounded-lg font-semibold hover:bg-gray-800 transition"
           >
             Sign In
           </button>
+
+          {/* Register Link */}
           <p className="mt-6 text-center text-sm">
             Don't Have An Account? {}
             <Link
@@ -91,7 +130,6 @@ const Login = () => {
         </form>
       </div>
 
-      {/* Right Side - Image (Hidden on Mobile) */}
       <div className="hidden md:block w-1/2">
         <div className="h-full flex flex-col justify-center items-center">
           <img
@@ -105,4 +143,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Login; 
