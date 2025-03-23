@@ -11,9 +11,9 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // State for password visibility
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State for confirm password visibility
-  const [agreeToPolicy, setAgreeToPolicy] = useState(false); // State for policy agreement
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agreeToPolicy, setAgreeToPolicy] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,12 +58,10 @@ const Register = () => {
     dispatch(registerUser({ name, email, password }));
   };
 
-  // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  // Toggle confirm password visibility
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
@@ -79,10 +77,10 @@ const Register = () => {
           <div className="flex justify-center mb-6">
             <h2 className="text-xl font-medium">ShopEase</h2>
           </div>
-          <h2 className="text-2xl font-bold text-center mb-6">Create Your Account</h2>
-          <p className="text-center mb-6">
-            Enter Your Details To Register
-          </p>
+          <h2 className="text-2xl font-bold text-center mb-6">
+            Create Your Account
+          </h2>
+          <p className="text-center mb-6">Enter Your Details To Register</p>
           <div className="mb-4">
             <label className="block text-sm font-semibold mb-2">Name</label>
             <input
@@ -120,11 +118,17 @@ const Register = () => {
               onClick={togglePasswordVisibility}
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-6"
             >
-              {showPassword ? <FaEyeSlash className="h-5 w-5 text-gray-500" /> : <FaEye className="h-5 w-5 text-gray-500" />}
+              {showPassword ? (
+                <FaEyeSlash className="h-5 w-5 text-gray-500" />
+              ) : (
+                <FaEye className="h-5 w-5 text-gray-500" />
+              )}
             </button>
           </div>
           <div className="mb-4 relative">
-            <label className="block text-sm font-semibold mb-2">Confirm Password</label>
+            <label className="block text-sm font-semibold mb-2">
+              Confirm Password
+            </label>
             <input
               type={showConfirmPassword ? "text" : "password"}
               value={confirmPassword}
@@ -138,7 +142,11 @@ const Register = () => {
               onClick={toggleConfirmPasswordVisibility}
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-6"
             >
-              {showConfirmPassword ? <FaEyeSlash className="h-5 w-5 text-gray-500" /> : <FaEye className="h-5 w-5 text-gray-500" />}
+              {showConfirmPassword ? (
+                <FaEyeSlash className="h-5 w-5 text-gray-500" />
+              ) : (
+                <FaEye className="h-5 w-5 text-gray-500" />
+              )}
             </button>
           </div>
           <div className="mb-4 flex items-center">

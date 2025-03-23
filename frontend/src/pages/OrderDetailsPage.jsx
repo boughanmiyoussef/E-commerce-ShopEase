@@ -8,7 +8,7 @@ const OrderDetailsPage = () => {
   const dispatch = useDispatch();
 
   const { orderDetails, loading, error } = useSelector((state) => state.orders);
-  const { user } = useSelector((state) => state.auth); // Get the user from the Redux store
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(fetchOrderDetails(id));

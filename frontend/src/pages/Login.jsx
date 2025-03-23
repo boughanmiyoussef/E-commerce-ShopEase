@@ -15,7 +15,11 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { userId, guestId, error: authError } = useSelector((state) => state.auth);
+  const {
+    userId,
+    guestId,
+    error: authError
+  } = useSelector((state) => state.auth);
   const { cart } = useSelector((state) => state.cart);
 
   const redirect = new URLSearchParams(location.search).get("redirect") || "/";
@@ -143,4 +147,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

@@ -5,16 +5,18 @@ import { useDispatch, useSelector } from "react-redux";
 const AdminHomePage = () => {
   const dispatch = useDispatch();
 
-  const { products, loading: productsLoading, error: productsError } = useSelector(
-    (state) => state.adminProducts
-  );
+  const {
+    products,
+    loading: productsLoading,
+    error: productsError
+  } = useSelector((state) => state.adminProducts);
 
   const {
     orders,
     totalOrders,
     totalSales,
     loading: ordersLoading,
-    error: ordersError,
+    error: ordersError
   } = useSelector((state) => state.adminOrders);
 
   useEffect(() => {
@@ -41,20 +43,27 @@ const AdminHomePage = () => {
             <div className="p-4 shadow-md rounded-lg">
               <h2 className="text-xl font-semibold">Total Orders</h2>
               <p className="text-2xl">{totalOrders}</p>
-              <Link to="/admin/orders" className="text-blue-500 hover:underline">
+              <Link
+                to="/admin/orders"
+                className="text-blue-500 hover:underline"
+              >
                 Manage Orders
               </Link>
             </div>
             <div className="p-4 shadow-md rounded-lg">
               <h2 className="text-xl font-semibold">Total Products</h2>
               <p className="text-2xl">{products.length}</p>
-              <Link to="/admin/products" className="text-blue-500 hover:underline">
+              <Link
+                to="/admin/products"
+                className="text-blue-500 hover:underline"
+              >
                 Manage Products
               </Link>
             </div>
           </div>
           <div className="mt-6">
-            <h2 className="text-2xl font-bold mb-4">Recent Orders</h2> {/* Fixed typo in className (text-2x -> text-2xl) */}
+            <h2 className="text-2xl font-bold mb-4">Recent Orders</h2>{" "}
+            {/* Fixed typo in className (text-2x -> text-2xl) */}
             <div className="overflow-x-auto">
               <table className="min-w-full text-gray-500">
                 <thead className="bg-gray-100 text-xs uppercase text-gray-700">
@@ -68,10 +77,15 @@ const AdminHomePage = () => {
                 <tbody>
                   {orders.length > 0 ? (
                     orders.map((order) => (
-                      <tr key={order._id} className="border-b hover:bg-gray-50 cursor-pointer">
+                      <tr
+                        key={order._id}
+                        className="border-b hover:bg-gray-50 cursor-pointer"
+                      >
                         <td className="py-2 px-4">{order._id}</td>
                         <td className="py-2 px-4">{order.user.name}</td>
-                        <td className="py-2 px-4">${order.totalPrice.toFixed}</td>
+                        <td className="py-2 px-4">
+                          ${order.totalPrice.toFixed}
+                        </td>
                         <td className="py-2 px-4">{order.status}</td>
                       </tr>
                     ))

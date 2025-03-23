@@ -39,7 +39,9 @@ const OrderConfirmationPage = () => {
   if (!checkout) {
     return (
       <div className="max-w-4xl mx-auto p-6 bg-white">
-        <p className="text-center text-gray-500">No order found. Please check your orders page.</p>
+        <p className="text-center text-gray-500">
+          No order found. Please check your orders page.
+        </p>
       </div>
     );
   }
@@ -94,8 +96,8 @@ const OrderConfirmationPage = () => {
             <h4 className="text-lg font-semibold mb-2">Shipping Address</h4>
             <p className="text-gray-600">{checkout.shippingAddress.address}</p>
             <p className="text-gray-600">
-              {checkout.shippingAddress.city}, 
-              {checkout.shippingAddress.postalCode}, 
+              {checkout.shippingAddress.city},
+              {checkout.shippingAddress.postalCode},
               {checkout.shippingAddress.country}
             </p>
           </div>
