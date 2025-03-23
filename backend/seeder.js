@@ -10,32 +10,32 @@ dotenv.config();
 mongoose.connect(process.env.MONGO_URI);
 
 const seedData = async () => {
-    try {
-        await Product.deleteMany();
-        await User.deleteMany();
-        await Cart.deleteMany();
+  try {
+    await Product.deleteMany();
+    await User.deleteMany();
+    await Cart.deleteMany();
 
-        const createdUser = await User.create({
-            name: "Admin User",
-            email: "admin@example.com",
-            password: "123456",
-            role: "admin",
-        });
+    const createdUser = await User.create({
+      name: "Admin User",
+      email: "admin@example.com",
+      password: "123456",
+      role: "admin"
+    });
 
-        const userID = createdUser._id;
+    const userID = createdUser._id;
 
-        const sampleProduct = products.map((product) => {
-            return { ...product, user: userID };
-        });
+    const sampleProduct = products.map((product) => {
+      return { ...product, user: userID };
+    });
 
-        await Product.insertMany(sampleProduct);
+    await Product.insertMany(sampleProduct);
 
-        console.log("Product Data Seeded Successfully");
-        process.exit();
-    } catch (error) {
-        console.error("Error Seeding The Data", error);
-        process.exit(1);
-    }
+    console.log("Product Data Seeded Successfully");
+    process.exit();
+  } catch (error) {
+    console.error("Error Seeding The Data", error);
+    process.exit(1);
+  }
 };
 
 seedData();
