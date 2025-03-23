@@ -303,7 +303,7 @@ const products = [
       sku: "BW-001",
       category: "Bottom Wear",
       brand: "Fashionista",
-      sizes: ["S", "M", "L", "XL"],
+      sizes: ["M", "L", "XL"],
       colors: ["Black", "Gray", "Navy"],
       collections: "Casual Collection",
       material: "Cotton Blend",
@@ -723,9 +723,9 @@ const products = [
       numReviews: 18,
     },
     {
-      name: "Flared Palazzo Pants",
+      name: "Flared Palazzo Pants", 
       description:
-        "High-waist palazzo pants with a loose, flowing fit. Comfortable and stylish, making them perfect for casual outings or beach days.",
+        "BECH NBADELHAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH",
       price: 45,
       discountPrice: 40,
       countInStock: 35,
@@ -733,21 +733,21 @@ const products = [
       category: "Bottom Wear",
       brand: "Beach Breeze",
       sizes: ["S", "M", "L", "XL"],
-      colors: ["White", "Beige", "Light Blue"],
+      colors: ["White", "Beige", "Red"],
       collections: "Summer Collection",
       material: "Linen Blend",
       gender: "Women",
       images: [
         {
-          url: "https://www.tjori.com/collections/pants-palazzos-bottomwear/products/207-39?variant=43400518435038#images-1",
+          url: "https://assets.ajio.com/medias/sys_master/root/20231027/J22Z/653bc986afa4cf41f56440bd/-473Wx593H-462792709-maroon-MODEL.jpg",
           altText: "Flared Palazzo Pants Front View",
         },
         {
-          url: "https://www.tjori.com/collections/pants-palazzos-bottomwear/products/207-39?variant=43400518435038#images-2",
+          url: "https://assets.ajio.com/medias/sys_master/root/20231027/ZApQ/653bd976afa4cf41f564e047/-473Wx593H-462792709-maroon-MODEL2.jpg",
           altText: "Flared Palazzo Pants Front View",
         },
         {
-          url: "https://www.tjori.com/collections/pants-palazzos-bottomwear/products/207-39?variant=43400518435038#images-3",
+          url: "https://assets.ajio.com/medias/sys_master/root/20231027/aGxl/653bd015afa4cf41f564b53c/-473Wx593H-462792709-maroon-MODEL4.jpg",
           altText: "Flared Palazzo Pants Front View",
         },
       ],
