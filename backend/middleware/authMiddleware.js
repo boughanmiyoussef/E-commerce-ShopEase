@@ -22,7 +22,7 @@ const protect = async (req, res, next) => {
 
 const admin = (req, res, next) => {
     console.log("Admin check - User:", req.user);
-    if (req.user && req.user.role === "admin") { // Changed to check role
+    if (req.user && req.user.role === "admin") {
         next();
     } else {
         res.status(403).json({ message: "Not authorized as an admin" });
