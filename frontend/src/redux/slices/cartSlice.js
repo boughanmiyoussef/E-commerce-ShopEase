@@ -61,7 +61,10 @@ export const addToCart = createAsyncThunk(
 // Update the quantity of an item in the cart for a user or guest
 export const updateCartItemQuantity = createAsyncThunk(
   "cart/updateCartItemQuantity",
-  async ({ productId, quantity, size, color, guestId, userId }, { rejectWithValue }) => {
+  async (
+    { productId, quantity, size, color, guestId, userId },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/cart/${productId}`,
@@ -71,7 +74,7 @@ export const updateCartItemQuantity = createAsyncThunk(
           size,
           color,
           userId,
-          guestId,
+          guestId
         }
       );
       return response.data;
@@ -90,7 +93,7 @@ export const removeFromCart = createAsyncThunk(
       const response = await axios({
         method: "DELETE",
         url: `${import.meta.env.VITE_BACKEND_URL}/api/cart/${productId}`,
-        data: { productId, guestId, userId, size, color },
+        data: { productId, guestId, userId, size, color }
       });
       return response.data;
     } catch (error) {
@@ -103,19 +106,30 @@ export const removeFromCart = createAsyncThunk(
 // Merge guest cart into user cart when user
 export const mergeCart = createAsyncThunk(
   "cart/mergeCart",
-  async ({ guestId, user}, { rejectWithValue }) => {
+  async ({ guestId }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/cart`, {
-        params: { guestId, user },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          "Content-Type": "application/json"
+      // Validate guestId
+      if (!guestId) {
+        throw new Error("Guest ID is required");
+      }
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/cart/merge`,
+        { guestId }, // Send only guestId in the request body
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            "Content-Type": "application/json"
+          }
         }
-      });
+      );
       return response.data;
     } catch (error) {
-      console.error("Error merging carts:", error);
-      return rejectWithValue(error.response.data);
+      console.error(
+        "Error merging carts:",
+        error.response?.data || error.message
+      );
+      return rejectWithValue(error.response?.data || "Failed to merge cart");
     }
   }
 );
@@ -125,13 +139,13 @@ const cartSlice = createSlice({
   initialState: {
     cart: { products: [] },
     loading: false,
-    error: null,
+    error: null
   },
   reducers: {
     clearCart: (state) => {
       state.cart = { products: [] };
       localStorage.removeItem("cart");
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -172,7 +186,8 @@ const cartSlice = createSlice({
       })
       .addCase(updateCartItemQuantity.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Failed to update item quantity";
+        state.error =
+          action.payload?.message || "Failed to update item quantity";
       })
       .addCase(removeFromCart.pending, (state) => {
         state.loading = true;

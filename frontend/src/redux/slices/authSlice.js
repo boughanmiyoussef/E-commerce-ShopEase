@@ -7,7 +7,8 @@ const userFromStorage = localStorage.getItem("userInfo")
   : null;
 
 // Check for an existing guest id or generate a new one
-const initialGuestId = localStorage.getItem("guestId") || `guest_${new Date().getTime()}`;
+const initialGuestId =
+  localStorage.getItem("guestId") || `guest_${new Date().getTime()}`;
 localStorage.setItem("guestId", initialGuestId);
 
 const initialState = {
@@ -15,7 +16,7 @@ const initialState = {
   userId: userFromStorage?._id || null, // Add userId to state
   guestId: initialGuestId,
   loading: false,
-  error: null,
+  error: null
 };
 
 // Login User Thunk
@@ -63,7 +64,7 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.userId = null; // Clear userId on logout
+      state.userId = null;
       state.guestId = `guest_${new Date().getTime()}`;
       localStorage.removeItem("userInfo");
       localStorage.removeItem("userToken");
@@ -72,7 +73,7 @@ const authSlice = createSlice({
     generateNewGuestId: (state) => {
       state.guestId = `guest_${new Date().getTime()}`;
       localStorage.setItem("guestId", state.guestId);
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -107,7 +108,7 @@ const authSlice = createSlice({
         state.error = action.payload?.message || "Registration failed";
         console.error("Registration Error:", action.payload);
       });
-  },
+  }
 });
 
 export const { logout, generateNewGuestId } = authSlice.actions;

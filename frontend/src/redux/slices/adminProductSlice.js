@@ -11,8 +11,8 @@ export const fetchAdminProducts = createAsyncThunk(
       const USER_TOKEN = `Bearer ${localStorage.getItem("userToken")}`;
       const response = await axios.get(`${API_URL}/api/admin/products`, {
         headers: {
-          Authorization: USER_TOKEN,
-        },
+          Authorization: USER_TOKEN
+        }
       });
       return response.data;
     } catch (error) {
@@ -20,7 +20,6 @@ export const fetchAdminProducts = createAsyncThunk(
     }
   }
 );
-
 
 // Async thunk to create a new product
 export const createProduct = createAsyncThunk(

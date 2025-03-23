@@ -16,12 +16,13 @@ export const fetchProductsByFilters = createAsyncThunk(
     category,
     material,
     brand,
-    limit,
+    limit
   }) => {
     const query = new URLSearchParams();
     if (collection) query.append("collection", collection);
     if (size) query.append("size", Array.isArray(size) ? size.join(",") : size);
-    if (color) query.append("color", Array.isArray(color) ? color.join(",") : color);
+    if (color)
+      query.append("color", Array.isArray(color) ? color.join(",") : color);
     if (gender) query.append("gender", gender);
     if (minPrice) query.append("minPrice", minPrice);
     if (maxPrice) query.append("maxPrice", maxPrice);
@@ -37,7 +38,7 @@ export const fetchProductsByFilters = createAsyncThunk(
     );
     return response.data;
   }
-);  
+);
 
 // Async thunk to fetch a single product by id
 export const fetchProductDetails = createAsyncThunk(
@@ -59,35 +60,42 @@ export const updateProduct = createAsyncThunk(
       productData,
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-        },
+          Authorization: `Bearer ${localStorage.getItem("userToken")}`
+        }
       }
     );
     return response.data;
   }
 );
 
-
 export const updateProductStock = createAsyncThunk(
   "products/updateStock",
   async ({ productId, quantity }, { rejectWithValue }) => {
     try {
-      console.log("Updating stock for product:", productId, "with quantity:", quantity);
+      console.log(
+        "Updating stock for product:",
+        productId,
+        "with quantity:",
+        quantity
+      );
 
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/products/${productId}/stock`,
         { quantity },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`
+          }
         }
       );
 
       console.log("Stock update response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error updating stock:", error.response?.data || error.message);
+      console.error(
+        "Error updating stock:",
+        error.response?.data || error.message
+      );
       return rejectWithValue(error.response?.data || error.message);
     }
   }
@@ -95,7 +103,7 @@ export const updateProductStock = createAsyncThunk(
 
 // Async thunk to fetch similar products
 export const fetchSimilarProducts = createAsyncThunk(
-  "products/fetchSimilarProducts", // Fixed typo here
+  "products/fetchSimilarProducts",
   async ({ id }) => {
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}/api/products/similar/${id}`
@@ -109,7 +117,7 @@ const productsSlice = createSlice({
   initialState: {
     products: [],
     selectedProduct: null,
-    similarProducts: [], // Fixed typo here
+    similarProducts: [],
     loading: false,
     error: null,
     filters: {
@@ -123,8 +131,8 @@ const productsSlice = createSlice({
       sortBy: "",
       search: "",
       material: "",
-      collection: "",
-    },
+      collection: ""
+    }
   },
   reducers: {
     setFilters: (state, action) => {
@@ -133,12 +141,12 @@ const productsSlice = createSlice({
     addToCart: (state, action) => {
       const { product, quantity, size, color } = action.payload;
       const existingItem = state.cart.products.find(
-        (item) => 
+        (item) =>
           item.productId === product._id &&
           item.size === size &&
           item.color === color
       );
-  
+
       if (existingItem) {
         existingItem.quantity += quantity;
       } else {
@@ -150,10 +158,10 @@ const productsSlice = createSlice({
           countInStock: product.countInStock,
           quantity,
           size,
-          color,
+          color
         });
       }
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -233,7 +241,7 @@ const productsSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       });
-  },
+  }
 });
 
 export const { setFilters, clearFilters } = productsSlice.actions;
