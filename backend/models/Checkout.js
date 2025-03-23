@@ -5,34 +5,34 @@ const checkoutItemSchema = new mongoose.Schema(
     productId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product",
-      required: true,
+      required: true
     },
     name: {
       type: String,
-      required: true,
+      required: true
     },
     image: {
       type: String,
-      required: true,
+      required: true
     },
     price: {
       type: Number,
-      required: true,
+      required: true
     },
     quantity: {
       type: Number,
-      required: true,
+      required: true
     },
     size: {
-      type: String, // Add size
-      required: true,
+      type: String,
+      required: true
     },
     color: {
-      type: String, // Add color
-      required: true,
-    },
+      type: String,
+      required: true
+    }
   },
-  { _id: false } // Disable _id for nested documents
+  { _id: false }
 );
 
 const checkoutSchema = new mongoose.Schema(
@@ -40,47 +40,47 @@ const checkoutSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true
     },
-    checkoutItems: [checkoutItemSchema], // Array of checkout items
+    checkoutItems: [checkoutItemSchema],
     shippingAddress: {
       address: { type: String, required: true },
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
-      country: { type: String, required: true },
+      country: { type: String, required: true }
     },
     paymentMethod: {
       type: String,
-      required: true,
+      required: true
     },
     totalPrice: {
       type: Number,
-      required: true,
+      required: true
     },
     isPaid: {
       type: Boolean,
-      default: false,
+      default: false
     },
     paidAt: {
-      type: Date,
+      type: Date
     },
     paymentStatus: {
       type: String,
-      enum: ["Pending", "Paid", "Failed"], // Enforce specific values
-      default: "Pending", // Ensure this matches backend expectations
+      enum: ["Pending", "Paid", "Failed"],
+      default: "Pending"
     },
     paymentDetails: {
-      type: mongoose.Schema.Types.Mixed, // Flexible, but consider a stricter schema
+      type: mongoose.Schema.Types.Mixed
     },
     isFinalized: {
       type: Boolean,
-      default: false,
+      default: false
     },
     finalizedAt: {
-      type: Date,
-    },
+      type: Date
+    }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Checkout", checkoutSchema); 
+module.exports = mongoose.model("Checkout", checkoutSchema);
