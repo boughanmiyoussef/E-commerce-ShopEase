@@ -1,7 +1,7 @@
-import axios from 'axios';
-import React, { useRef, useEffect, useState } from 'react';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import axios from "axios";
+import React, { useRef, useEffect, useState } from "react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);
@@ -34,15 +34,16 @@ const NewArrivals = () => {
   }, []);
 
   const scroll = (direction) => {
-    const scrollAmount = direction === 'left' ? -300 : 300;
-    scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    const scrollAmount = direction === "left" ? -300 : 300;
+    scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
   const updateScrollButtons = () => {
     const container = scrollRef.current;
     if (!container) return;
     const leftScroll = container.scrollLeft;
-    const rightScrollable = container.scrollWidth > leftScroll + container.clientWidth;
+    const rightScrollable =
+      container.scrollWidth > leftScroll + container.clientWidth;
     setCanScrollLeft(leftScroll > 0);
     setCanScrollRight(rightScrollable);
   };
@@ -73,18 +74,35 @@ const NewArrivals = () => {
   }, [newArrivals]);
 
   return (
-    <section className='py-16 px-4 lg:px-0'>
+    <section className="py-16 px-4 lg:px-0">
       <div className="container mx-auto text-center mb-10 relative">
         <h2 className="text-3xl font-bold mb-4">Explore New Arrivals</h2>
         <p className="text-lg text-gray-600 mb-8">
-          Discover the latest and greatest products from our wide range of brands.
+          Discover the latest and greatest products from our wide range of
+          brands.
         </p>
         {/* Scroll Buttons */}
         <div className="absolute right-0 bottom-[-30px] flex space-x-2">
-          <button onClick={() => scroll('left')} disabled={!canScrollLeft} className={`p-2 rounded border ${canScrollLeft ? "bg-white text-black" : "bg-gray-200 text-gray-400 cursor-not-allowed "}`}>
+          <button
+            onClick={() => scroll("left")}
+            disabled={!canScrollLeft}
+            className={`p-2 rounded border ${
+              canScrollLeft
+                ? "bg-white text-black"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed "
+            }`}
+          >
             <FiChevronLeft className="text-2xl" />
           </button>
-          <button onClick={() => scroll('right')} disabled={!canScrollRight} className={`p-2 rounded border ${canScrollRight ? "bg-white text-black" : "bg-gray-200 text-gray-400 cursor-not-allowed "}`}>
+          <button
+            onClick={() => scroll("right")}
+            disabled={!canScrollRight}
+            className={`p-2 rounded border ${
+              canScrollRight
+                ? "bg-white text-black"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed "
+            }`}
+          >
             <FiChevronRight className="text-2xl" />
           </button>
         </div>
@@ -92,7 +110,9 @@ const NewArrivals = () => {
       {/* Scrollable Content */}
       <div
         ref={scrollRef}
-        className={`container mx-auto overflow-x-auto flex space-x-6 relative ${isDragging ? "cursor-grabbing " : "cursor-grab"}`}
+        className={`container mx-auto overflow-x-auto flex space-x-6 relative ${
+          isDragging ? "cursor-grabbing " : "cursor-grab"
+        }`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
@@ -100,14 +120,17 @@ const NewArrivals = () => {
       >
         {newArrivals.length > 0 ? (
           newArrivals.map((product) => (
-            <div key={product._id} className="min-w-[100%] sm:min-w-[50%] lg:min-w-[30%] relative">
+            <div
+              key={product._id}
+              className="min-w-[100%] sm:min-w-[50%] lg:min-w-[30%] relative"
+            >
               <img
-                src={product.images[0]?.url }
+                src={product.images[0]?.url}
                 alt={product.images[0]?.altText || product.name}
                 className="w-full h-[500px] object-cover rounded-lg"
-                draggable='false'
+                draggable="false"
                 onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/500"; // Fallback if image fails to load
+                  e.target.src = "https://via.placeholder.com/500";
                 }}
               />
               <div className="absolute bottom-0 left-0 right-0 bg-opacity-50 backdrop-blur-md text-white p-4 rounded-b-lg">

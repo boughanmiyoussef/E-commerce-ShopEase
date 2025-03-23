@@ -13,7 +13,7 @@ const FilterSidebar = () => {
     material: [],
     brand: [],
     minPrice: 0,
-    maxPrice: 100,
+    maxPrice: 100
   });
 
   const [priceRange, setPriceRange] = useState([0, 100]);
@@ -29,14 +29,26 @@ const FilterSidebar = () => {
     "White",
     "Gray",
     "Purple",
-    "Brown",
+    "Brown"
   ];
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
   const materials = [
-    "Cotton", "Wool", "Denim", "Polyester", "Silk", "Linen", "Viscose", "Fleece",
+    "Cotton",
+    "Wool",
+    "Denim",
+    "Polyester",
+    "Silk",
+    "Linen",
+    "Viscose",
+    "Fleece"
   ];
   const brands = [
-    "Urban Threads", "Modern Fit", "Street Style", "Beach Breeze", "Fashionista", "ChicStyle",
+    "Urban Threads",
+    "Modern Fit",
+    "Street Style",
+    "Beach Breeze",
+    "Fashionista",
+    "ChicStyle"
   ];
   const genders = ["Men", "Women"];
 
@@ -51,9 +63,12 @@ const FilterSidebar = () => {
       material: params.material ? params.material.split(",") : [],
       brand: params.brand ? params.brand.split(",") : [],
       minPrice: parseInt(params.minPrice) || 0,
-      maxPrice: parseInt(params.maxPrice) || 100,
+      maxPrice: parseInt(params.maxPrice) || 100
     });
-    setPriceRange([parseInt(params.minPrice) || 0, parseInt(params.maxPrice) || 100]);
+    setPriceRange([
+      parseInt(params.minPrice) || 0,
+      parseInt(params.maxPrice) || 100
+    ]);
   }, [searchParams]);
 
   const handleFilterChange = (e) => {
@@ -210,7 +225,9 @@ const FilterSidebar = () => {
 
       {/* Price Range Filter */}
       <div className="mb-6">
-        <label className="block text-gray-600 font-medium mb-2">Price Range</label>
+        <label className="block text-gray-600 font-medium mb-2">
+          Price Range
+        </label>
         <input
           type="range"
           name="priceRange"

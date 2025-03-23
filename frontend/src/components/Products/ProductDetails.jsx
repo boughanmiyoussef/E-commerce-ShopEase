@@ -1,22 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { toast } from 'sonner';
-import ProductGrid from './ProductGrid';
-import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchProductDetails, fetchSimilarProducts } from '../../redux/slices/productsSlice';
-import { addToCart } from '../../redux/slices/cartSlice';
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
+import ProductGrid from "./ProductGrid";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchProductDetails,
+  fetchSimilarProducts
+} from "../../redux/slices/productsSlice";
+import { addToCart } from "../../redux/slices/cartSlice";
 import SizeChartModal from "./SizeChartModal"; // Corrected import
-import { FaTruck, FaUndo, FaShieldAlt, FaChevronDown, FaChevronUp } from 'react-icons/fa'; // Icons for delivery, return, security, and Q&A
-import { SiVisa, SiMastercard, SiPaypal } from 'react-icons/si'; // Payment method icons
+import {
+  FaTruck,
+  FaUndo,
+  FaShieldAlt,
+  FaChevronDown,
+  FaChevronUp
+} from "react-icons/fa"; // Icons for delivery, return, security, and Q&A
+import { SiVisa, SiMastercard, SiPaypal } from "react-icons/si"; // Payment method icons
 
 const ProductDetails = ({ productId }) => {
   const { id } = useParams();
   const dispatch = useDispatch();
-  const { selectedProduct, loading, error, similarProducts = [] } = useSelector((state) => state.products);
+  const {
+    selectedProduct,
+    loading,
+    error,
+    similarProducts = []
+  } = useSelector((state) => state.products);
   const { user, guestId } = useSelector((state) => state.auth);
-  const [mainImage, setMainImage] = useState('');
-  const [selectedSize, setSelectedSize] = useState('');
-  const [selectedColor, setSelectedColor] = useState('');
+  const [mainImage, setMainImage] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [hoveredImage, setHoveredImage] = useState(null);
@@ -32,10 +46,10 @@ const ProductDetails = ({ productId }) => {
       dispatch(fetchSimilarProducts({ id: productFetchId }))
         .unwrap()
         .then((response) => {
-          console.log('Similar Products Response:', response);
+          console.log("Similar Products Response:", response);
         })
         .catch((error) => {
-          console.error('Error fetching similar products:', error);
+          console.error("Error fetching similar products:", error);
         });
     }
   }, [dispatch, productFetchId]);
@@ -45,12 +59,12 @@ const ProductDetails = ({ productId }) => {
     images = [],
     colors = [],
     sizes = [],
-    name = '',
+    name = "",
     price = 0,
     originalPrice = 0,
-    description = '',
-    brand = '',
-    material = '',
+    description = "",
+    brand = "",
+    material = ""
   } = selectedProduct || {};
 
   // Set initial main image
@@ -62,19 +76,21 @@ const ProductDetails = ({ productId }) => {
 
   // Scroll to top on mount or when productId changes
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [productFetchId]);
 
   // Handle quantity change
   const handleQuantityChange = (action) => {
-    if (action === 'plus') setQuantity((prev) => prev + 1);
-    if (action === 'minus' && quantity > 1) setQuantity((prev) => prev - 1);
+    if (action === "plus") setQuantity((prev) => prev + 1);
+    if (action === "minus" && quantity > 1) setQuantity((prev) => prev - 1);
   };
 
   // Handle add to cart
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
-      toast.error('Please Select A Size And A Color Before Adding To Cart', { duration: 700 });
+      toast.error("Please Select A Size And A Color Before Adding To Cart", {
+        duration: 700
+      });
       return;
     }
     setIsButtonDisabled(true);
@@ -86,11 +102,11 @@ const ProductDetails = ({ productId }) => {
         size: selectedSize,
         color: selectedColor,
         guestId,
-        userId: user?._id,
+        userId: user?._id
       })
     )
       .then(() => {
-        toast.success('Product Added To Cart', { duration: 1000 });
+        toast.success("Product Added To Cart", { duration: 1000 });
       })
       .finally(() => {
         setIsButtonDisabled(false);
@@ -106,24 +122,28 @@ const ProductDetails = ({ productId }) => {
   const qaData = [
     {
       id: 1,
-      question: 'What is the return policy?',
-      answer: 'You can return the product within 30 days of purchase for a full refund or exchange.',
+      question: "What is the return policy?",
+      answer:
+        "You can return the product within 30 days of purchase for a full refund or exchange."
     },
     {
       id: 2,
-      question: 'How long does delivery take?',
-      answer: 'Standard delivery takes 3-5 business days. Express delivery is available for an additional fee.',
+      question: "How long does delivery take?",
+      answer:
+        "Standard delivery takes 3-5 business days. Express delivery is available for an additional fee."
     },
     {
       id: 3,
-      question: 'Is international shipping available?',
-      answer: 'Yes, we ship internationally. Additional fees may apply depending on the destination.',
+      question: "Is international shipping available?",
+      answer:
+        "Yes, we ship internationally. Additional fees may apply depending on the destination."
     },
     {
       id: 4,
-      question: 'What payment methods do you accept?',
-      answer: 'We accept Visa, Mastercard, PayPal, and other major payment methods.',
-    },
+      question: "What payment methods do you accept?",
+      answer:
+        "We accept Visa, Mastercard, PayPal, and other major payment methods."
+    }
   ];
 
   // Loading state
@@ -156,7 +176,9 @@ const ProductDetails = ({ productId }) => {
                 <img
                   src={image.url}
                   alt={image.altText || `Thumbnail ${index}`}
-                  className={`w-20 h-20 object-cover rounded-lg cursor-pointer border ${mainImage === image.url ? 'border-black' : 'border-gray-300'}`}
+                  className={`w-20 h-20 object-cover rounded-lg cursor-pointer border ${
+                    mainImage === image.url ? "border-black" : "border-gray-300"
+                  }`}
                   onClick={() => setMainImage(image.url)}
                 />
               </div>
@@ -179,7 +201,9 @@ const ProductDetails = ({ productId }) => {
                 key={index}
                 src={image.url}
                 alt={image.altText || `Thumbnail ${index}`}
-                className={`w-20 h-20 object-cover rounded-lg cursor-pointer border ${mainImage === image.url ? 'border-black' : 'border-gray-300'}`}
+                className={`w-20 h-20 object-cover rounded-lg cursor-pointer border ${
+                  mainImage === image.url ? "border-black" : "border-gray-300"
+                }`}
                 onClick={() => setMainImage(image.url)}
               />
             ))}
@@ -201,10 +225,14 @@ const ProductDetails = ({ productId }) => {
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    className={`w-8 h-8 rounded-full border ${selectedColor === color ? 'border-4 border-black' : 'border-gray-300'}`}
+                    className={`w-8 h-8 rounded-full border ${
+                      selectedColor === color
+                        ? "border-4 border-black"
+                        : "border-gray-300"
+                    }`}
                     style={{
                       backgroundColor: color.toLowerCase(),
-                      filter: 'brightness(0.5)',
+                      filter: "brightness(0.5)"
                     }}
                   />
                 ))}
@@ -218,7 +246,9 @@ const ProductDetails = ({ productId }) => {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 rounded border ${selectedSize === size ? 'bg-black text-white' : ''}`}
+                    className={`px-4 py-2 rounded border ${
+                      selectedSize === size ? "bg-black text-white" : ""
+                    }`}
                   >
                     {size}
                   </button>
@@ -236,14 +266,14 @@ const ProductDetails = ({ productId }) => {
               <p className="text-gray-700">Quantity</p>
               <div className="flex items-center space-x-4 mt-2">
                 <button
-                  onClick={() => handleQuantityChange('minus')}
+                  onClick={() => handleQuantityChange("minus")}
                   className="px-2 py-1 bg-gray-200 rounded text-lg"
                 >
                   -
                 </button>
                 <span className="text-lg">{quantity}</span>
                 <button
-                  onClick={() => handleQuantityChange('plus')}
+                  onClick={() => handleQuantityChange("plus")}
                   className="px-2 py-1 bg-gray-200 rounded text-lg"
                 >
                   +
@@ -254,9 +284,13 @@ const ProductDetails = ({ productId }) => {
             <button
               onClick={handleAddToCart}
               disabled={isButtonDisabled}
-              className={`bg-black text-white py-2 px-6 rounded w-full mb-4 ${isButtonDisabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-gray-900'}`}
+              className={`bg-black text-white py-2 px-6 rounded w-full mb-4 ${
+                isButtonDisabled
+                  ? "cursor-not-allowed opacity-50"
+                  : "hover:bg-gray-900"
+              }`}
             >
-              {isButtonDisabled ? 'Adding...' : 'ADD TO CART'}
+              {isButtonDisabled ? "Adding..." : "ADD TO CART"}
             </button>
 
             <div className="mt-10 text-gray-700">
@@ -274,15 +308,12 @@ const ProductDetails = ({ productId }) => {
                 </tbody>
               </table>
             </div>
-                
-
-
-
-
 
             {/* Q&A Section */}
             <div className="mt-10">
-              <h3 className="text-xl font-bold mb-4">Frequently Asked Questions</h3>
+              <h3 className="text-xl font-bold mb-4">
+                Frequently Asked Questions
+              </h3>
               <div className="space-y-4">
                 {qaData.map((item) => (
                   <div key={item.id} className="border-b border-gray-200 pb-4">
@@ -290,7 +321,9 @@ const ProductDetails = ({ productId }) => {
                       onClick={() => toggleQuestion(item.id)}
                       className="w-full flex justify-between items-center text-left focus:outline-none"
                     >
-                      <span className="font-medium text-gray-700">{item.question}</span>
+                      <span className="font-medium text-gray-700">
+                        {item.question}
+                      </span>
                       {openQuestionId === item.id ? (
                         <FaChevronUp className="w-5 h-5 text-gray-600" />
                       ) : (
@@ -298,7 +331,9 @@ const ProductDetails = ({ productId }) => {
                       )}
                     </button>
                     {openQuestionId === item.id && (
-                      <p className="mt-2 text-sm text-gray-600">{item.answer}</p>
+                      <p className="mt-2 text-sm text-gray-600">
+                        {item.answer}
+                      </p>
                     )}
                   </div>
                 ))}
@@ -308,7 +343,10 @@ const ProductDetails = ({ productId }) => {
         </div>
 
         {/* Size Chart Modal */}
-        <SizeChartModal isOpen={showSizeChart} onClose={() => setShowSizeChart(false)} />
+        <SizeChartModal
+          isOpen={showSizeChart}
+          onClose={() => setShowSizeChart(false)}
+        />
 
         {/* You May Also Like Section */}
         <div className="mt-20 px-4">

@@ -1,9 +1,9 @@
-import React from 'react';
-import { IoLogoInstagram } from 'react-icons/io';
-import { RiTwitterXLine } from 'react-icons/ri';
-import { TbBrandMeta, TbBrandPinterest, TbBrandTiktok } from 'react-icons/tb';
-import { FiPhoneCall } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { IoLogoInstagram } from "react-icons/io";
+import { RiTwitterXLine } from "react-icons/ri";
+import { TbBrandMeta, TbBrandPinterest, TbBrandTiktok } from "react-icons/tb";
+import { FiPhoneCall } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -11,8 +11,12 @@ const Footer = () => {
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-6 lg:px-8">
         <div>
           <h3 className="text-lg text-gray-800 mb-4">NewsLetter</h3>
-          <p className="mb-4 text-gray-500">Subscribe to our newsletter for exclusive offers and updates.</p>
-          <p className="font-medium text-sm text-gray-600 mb-6">Sign Up And Get 10% Off Your First Order</p>
+          <p className="mb-4 text-gray-500">
+            Subscribe to our newsletter for exclusive offers and updates.
+          </p>
+          <p className="font-medium text-sm text-gray-600 mb-6">
+            Sign Up And Get 10% Off Your First Order
+          </p>
 
           {/* Newsletter form */}
           <form className="flex">
@@ -35,16 +39,24 @@ const Footer = () => {
           <h3 className="text-lg text-gray-800 mb-4">Shop</h3>
           <ul className="space-y-2 text-gray-600">
             <li>
-              <Link to="#" className="hover:text-gray-600 transition-colors">Men's Top Wear</Link>
+              <Link to="#" className="hover:text-gray-600 transition-colors">
+                Men's Top Wear
+              </Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-600 transition-colors">Women's Top Wear</Link>
+              <Link to="#" className="hover:text-gray-600 transition-colors">
+                Women's Top Wear
+              </Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-600 transition-colors">Men's Bottom Wear</Link>
+              <Link to="#" className="hover:text-gray-600 transition-colors">
+                Men's Bottom Wear
+              </Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-600 transition-colors">Women's Bottom Wear</Link>
+              <Link to="#" className="hover:text-gray-600 transition-colors">
+                Women's Bottom Wear
+              </Link>
             </li>
           </ul>
         </div>
@@ -53,16 +65,24 @@ const Footer = () => {
           <h3 className="text-lg text-gray-800 mb-4">Support</h3>
           <ul className="space-y-2 text-gray-600">
             <li>
-              <Link to="#" className="hover:text-gray-600 transition-colors">Contact Us</Link>
+              <Link to="#" className="hover:text-gray-600 transition-colors">
+                Contact Us
+              </Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-600 transition-colors">About Us</Link>
+              <Link to="#" className="hover:text-gray-600 transition-colors">
+                About Us
+              </Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-600 transition-colors">FAQ's</Link>
+              <Link to="#" className="hover:text-gray-600 transition-colors">
+                FAQ's
+              </Link>
             </li>
             <li>
-              <Link to="#" className="hover:text-gray-600 transition-colors">Features</Link>
+              <Link to="#" className="hover:text-gray-600 transition-colors">
+                Features
+              </Link>
             </li>
           </ul>
         </div>
@@ -70,19 +90,44 @@ const Footer = () => {
         <div>
           <h3 className="text-lg text-gray-800 mb-4">Follow Us</h3>
           <div className="flex items-center space-x-4 mb-6">
-            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-500">
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-500"
+            >
               <TbBrandMeta className="h-5 w-5" />
             </a>
-            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-500">
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-500"
+            >
               <IoLogoInstagram className="h-5 w-5" />
             </a>
-            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-500">
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-500"
+            >
               <RiTwitterXLine className="h-5 w-5" />
             </a>
-            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-500">
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-500"
+            >
               <TbBrandPinterest className="h-5 w-5" />
             </a>
-            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-500">
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-500"
+            >
               <TbBrandTiktok className="h-5 w-5" />
             </a>
           </div>

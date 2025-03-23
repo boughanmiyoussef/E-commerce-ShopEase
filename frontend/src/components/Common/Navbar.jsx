@@ -1,11 +1,20 @@
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BsList, BsPerson, BsCart, BsBoxArrowInRight, BsShop } from "react-icons/bs";
+import {
+  BsList,
+  BsPerson,
+  BsCart,
+  BsBoxArrowInRight,
+  BsShop
+} from "react-icons/bs";
 
 import { MdSearch, MdClose } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import CartDrawer from "../Layout/CartDrawer";
-import { setFilters, fetchProductsByFilters } from "../../redux/slices/productsSlice";
+import {
+  setFilters,
+  fetchProductsByFilters
+} from "../../redux/slices/productsSlice";
 
 const Navbar = () => {
   const [navDrawerBar, setNavDrawerBar] = useState(false);
@@ -19,7 +28,9 @@ const Navbar = () => {
   const navigate = useNavigate();
   const searchInputRef = useRef(null);
 
-  const cartItemCount = cart?.products?.reduce((total, product) => total + product.quantity, 0) || 0;
+  const cartItemCount =
+    cart?.products?.reduce((total, product) => total + product.quantity, 0) ||
+    0;
 
   const toggleNavDrawer = () => {
     setNavDrawerBar(!navDrawerBar);
@@ -131,13 +142,25 @@ const Navbar = () => {
             >
               <MdSearch className="h-6 w-6" />
             </button>
-            <Link to="/collections/all" aria-label="Login" className="hover:text-gray-800 transition duration-200">
+            <Link
+              to="/collections/all"
+              aria-label="Login"
+              className="hover:text-gray-800 transition duration-200"
+            >
               <BsShop className="h-6 w-6" />
             </Link>
-            <Link to="/login" aria-label="Login" className="hover:text-gray-800 transition duration-200">
+            <Link
+              to="/login"
+              aria-label="Login"
+              className="hover:text-gray-800 transition duration-200"
+            >
               <BsBoxArrowInRight className="h-6 w-6" />
             </Link>
-            <Link to="/profile" aria-label="Profile" className="hover:text-gray-800 transition duration-200">
+            <Link
+              to="/profile"
+              aria-label="Profile"
+              className="hover:text-gray-800 transition duration-200"
+            >
               <BsPerson className="h-6 w-6" />
             </Link>
             <button
@@ -163,7 +186,11 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button onClick={toggleNavDrawer} aria-label="Toggle menu" className="md:hidden">
+          <button
+            onClick={toggleNavDrawer}
+            aria-label="Toggle menu"
+            className="md:hidden"
+          >
             <BsList className="h-6 w-6 text-gray-600 hover:text-gray-800 transition duration-200" />
           </button>
         </div>
@@ -216,7 +243,10 @@ const Navbar = () => {
       </div>
 
       {/* Cart Drawer */}
-      <CartDrawer drawerOpen={cartDrawerOpen} toggleCartDrawer={toggleCartDrawer} />
+      <CartDrawer
+        drawerOpen={cartDrawerOpen}
+        toggleCartDrawer={toggleCartDrawer}
+      />
     </>
   );
 };

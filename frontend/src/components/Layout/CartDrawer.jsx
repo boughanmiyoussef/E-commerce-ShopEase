@@ -22,7 +22,9 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
     for (const item of cart.products) {
       if (item.quantity > (item.countInStock || 0)) {
         setErrorMessage(
-          `You cannot exceed the available stock of ${item.countInStock || 0} for ${item.name}.`
+          `You cannot exceed the available stock of ${
+            item.countInStock || 0
+          } for ${item.name}.`
         );
         return false;
       }

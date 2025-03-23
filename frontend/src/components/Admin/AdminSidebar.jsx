@@ -1,21 +1,26 @@
 import React from "react";
-import { FaBoxOpen, FaClipboardList, FaShoppingCart, FaSignOutAlt, FaStore, FaUser } from "react-icons/fa";
+import {
+  FaBoxOpen,
+  FaClipboardList,
+  FaShoppingCart,
+  FaSignOutAlt,
+  FaStore,
+  FaUser
+} from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import {logout} from "../../redux/slices/authSlice"
-import {clearCart} from "../../redux/slices/cartSlice"
-
+import { logout } from "../../redux/slices/authSlice";
+import { clearCart } from "../../redux/slices/cartSlice";
 
 const AdminSidebar = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const handleLogout = () => {
-        dispatch(logout());
-        dispatch(clearCart());
-        navigate("/");
-    }
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+    dispatch(clearCart());
+    navigate("/");
+  };
 
-    
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -47,7 +52,7 @@ const AdminSidebar = () => {
               : "text-gray-300 hover:bg-gray-700 hover:text-white py-3 px-4 rounded flex items-center space-x-2"
           }
         >
-        <FaBoxOpen />
+          <FaBoxOpen />
           <span>Products</span>
         </NavLink>
 
@@ -76,16 +81,15 @@ const AdminSidebar = () => {
         </NavLink>
       </nav>
 
-          <div className="mt-6">
-            <button onClick={handleLogout} 
-            className="w-full bg-red-500 hover:bg-ref-600 text-white py-2 px-4 rounded flex items-center justify-center space-x-2"
-            >
-                <FaSignOutAlt/>
-                <span>Logout</span>
-            </button>
-          </div>
-
-
+      <div className="mt-6">
+        <button
+          onClick={handleLogout}
+          className="w-full bg-red-500 hover:bg-ref-600 text-white py-2 px-4 rounded flex items-center justify-center space-x-2"
+        >
+          <FaSignOutAlt />
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
   );
 };

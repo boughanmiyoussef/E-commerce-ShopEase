@@ -3,7 +3,7 @@ import { RiDeleteBin3Line } from "react-icons/ri";
 import { useDispatch } from "react-redux";
 import {
   updateCartItemQuantity,
-  removeFromCart,
+  removeFromCart
 } from "../../redux/slices/cartSlice";
 
 const CartContent = ({ cart, userId, guestId }) => {
@@ -11,14 +11,23 @@ const CartContent = ({ cart, userId, guestId }) => {
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Function to handle quantity changes
-  const handleQuantityChange = (productId, delta, quantity, size, color, countInStock) => {
+  const handleQuantityChange = (
+    productId,
+    delta,
+    quantity,
+    size,
+    color,
+    countInStock
+  ) => {
     const newQuantity = quantity + delta;
 
     // Use a fallback for countInStock
     const availableStock = countInStock !== undefined ? countInStock : Infinity;
 
     if (newQuantity > availableStock) {
-      setErrorMessage(`You cannot exceed the available stock of ${availableStock}.`);
+      setErrorMessage(
+        `You cannot exceed the available stock of ${availableStock}.`
+      );
       return;
     }
 
@@ -30,7 +39,7 @@ const CartContent = ({ cart, userId, guestId }) => {
           userId,
           guestId,
           size,
-          color,
+          color
         })
       );
       setErrorMessage(null);
@@ -45,7 +54,7 @@ const CartContent = ({ cart, userId, guestId }) => {
         userId,
         guestId,
         size,
-        color,
+        color
       })
     );
   };
@@ -73,11 +82,16 @@ const CartContent = ({ cart, userId, guestId }) => {
                 className="w-20 h-24 object-cover rounded"
               />
               <div>
-                <h3 className="text-lg font-medium text-black">{product.name}</h3>
+                <h3 className="text-lg font-medium text-black">
+                  {product.name}
+                </h3>
                 <p className="text-sm text-gray-600">Size: {product.size}</p>
                 <p className="text-sm text-gray-600">Color: {product.color}</p>
                 <p className="text-sm text-gray-600">
-                  Stock: {product.countInStock !== undefined ? product.countInStock : "N/A"}
+                  Stock:{" "}
+                  {product.countInStock !== undefined
+                    ? product.countInStock
+                    : "N/A"}
                 </p>
               </div>
             </div>
@@ -117,9 +131,13 @@ const CartContent = ({ cart, userId, guestId }) => {
                       product.countInStock
                     )
                   }
-                  disabled={product.countInStock !== undefined && product.quantity >= product.countInStock}
+                  disabled={
+                    product.countInStock !== undefined &&
+                    product.quantity >= product.countInStock
+                  }
                   className={`border rounded px-1.5 py-0.5 text-xl font-medium text-gray-700 hover:bg-gray-100 transition ${
-                    product.countInStock !== undefined && product.quantity >= product.countInStock
+                    product.countInStock !== undefined &&
+                    product.quantity >= product.countInStock
                       ? "opacity-50 cursor-not-allowed"
                       : ""
                   }`}
@@ -136,7 +154,11 @@ const CartContent = ({ cart, userId, guestId }) => {
                 {/* Remove Button */}
                 <button
                   onClick={() =>
-                    handleRemoveItem(product.productId, product.size, product.color)
+                    handleRemoveItem(
+                      product.productId,
+                      product.size,
+                      product.color
+                    )
                   }
                   className="hover:text-red-700 transition"
                 >

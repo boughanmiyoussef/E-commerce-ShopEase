@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchProductDetails, updateProduct } from "../../redux/slices/productsSlice";
+import {
+  fetchProductDetails,
+  updateProduct
+} from "../../redux/slices/productsSlice";
 import axios from "axios";
 
 const EditProductPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { selectedProduct, loading, error } = useSelector((state) => state.products);
+  const { selectedProduct, loading, error } = useSelector(
+    (state) => state.products
+  );
 
   const [productData, setProductData] = useState({
     name: "",
@@ -23,10 +28,10 @@ const EditProductPage = () => {
     collections: "",
     material: "",
     gender: "",
-    images: [],
+    images: []
   });
 
-  const [uploading, setUploading] = useState(false); // For image upload loading state
+  const [uploading, setUploading] = useState(false);
 
   // Fetch product details when the component mounts or the ID changes
   useEffect(() => {
@@ -41,7 +46,7 @@ const EditProductPage = () => {
       setProductData({
         ...selectedProduct,
         price: selectedProduct.price || "",
-        countInStock: selectedProduct.countInStock || "",
+        countInStock: selectedProduct.countInStock || ""
       });
     }
   }, [selectedProduct]);
@@ -53,12 +58,12 @@ const EditProductPage = () => {
     if (name === "sizes") {
       setProductData((prevData) => ({
         ...prevData,
-        sizes: value.split(",").map((size) => size.trim()),
+        sizes: value.split(",").map((size) => size.trim())
       }));
     } else if (name === "colors") {
       setProductData((prevData) => ({
         ...prevData,
-        colors: value.split(",").map((color) => color.trim()),
+        colors: value.split(",").map((color) => color.trim())
       }));
     } else {
       setProductData((prevData) => ({ ...prevData, [name]: value }));
@@ -68,7 +73,7 @@ const EditProductPage = () => {
   // Handle image upload
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
-    const formData = new FormData(); // Corrected to FormData
+    const formData = new FormData();
     formData.append("image", file);
 
     try {
@@ -77,14 +82,14 @@ const EditProductPage = () => {
         `${import.meta.env.VITE_BACKEND_URL}/api/upload`,
         formData,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: { "Content-Type": "multipart/form-data" }
         }
       );
 
       // Update productData with the new image URL
       setProductData((prevData) => ({
         ...prevData,
-        images: [...prevData.images, { url: data.imageUrl }], // Assuming the backend returns { imageUrl }
+        images: [...prevData.images, { url: data.imageUrl }] // Assuming the backend returns { imageUrl }
       }));
     } catch (error) {
       console.error("Error uploading image:", error);
@@ -97,7 +102,7 @@ const EditProductPage = () => {
   const handleDeleteImage = (index) => {
     setProductData((prevData) => ({
       ...prevData,
-      images: prevData.images.filter((_, i) => i !== index), // Remove the image at the specified index
+      images: prevData.images.filter((_, i) => i !== index) // Remove the image at the specified index
     }));
   };
 
@@ -189,7 +194,9 @@ const EditProductPage = () => {
 
         {/* Sizes */}
         <div className="mb-6">
-          <label className="block font-semibold mb-2">Sizes (comma-separated)</label>
+          <label className="block font-semibold mb-2">
+            Sizes (comma-separated)
+          </label>
           <input
             type="text"
             name="sizes"
@@ -201,7 +208,9 @@ const EditProductPage = () => {
 
         {/* Colors */}
         <div className="mb-6">
-          <label className="block font-semibold mb-2">Colors (comma-separated)</label>
+          <label className="block font-semibold mb-2">
+            Colors (comma-separated)
+          </label>
           <input
             type="text"
             name="colors"
@@ -214,7 +223,11 @@ const EditProductPage = () => {
         {/* Image Upload */}
         <div className="mb-6">
           <label className="block font-semibold mb-2">Upload Image</label>
-          <input type="file" onChange={handleImageUpload} disabled={uploading} />
+          <input
+            type="file"
+            onChange={handleImageUpload}
+            disabled={uploading}
+          />
           {uploading && <p>Uploading image...</p>}
           <div className="flex gap-4 mt-4">
             {productData.images.map((image, index) => (

@@ -1,12 +1,11 @@
 // In ../components/Products/ProductGrid.jsx
-import {React, useEffect} from 'react';
-import { Link } from 'react-router-dom';
+import { React, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const ProductGrid = ({ products }) => {
-
   // Scroll to top on mount
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top when component mounts
+    window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top when component mounts
   }, []);
 
   return (
@@ -20,7 +19,9 @@ const ProductGrid = ({ products }) => {
             />
           </div>
           <h3 className="text-sm mb-2">{product.name}</h3>
-          <p className="text-gray-500 font-medium text-sm tracking-tighter">${product.price}</p>
+          <p className="text-gray-500 font-medium text-sm tracking-tighter">
+            ${product.price}
+          </p>
         </Link>
       ))}
     </div>

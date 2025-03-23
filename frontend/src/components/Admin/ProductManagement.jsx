@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { deleteProduct, fetchAdminProducts } from "../../redux/slices/adminProductSlice";
+import {
+  deleteProduct,
+  fetchAdminProducts
+} from "../../redux/slices/adminProductSlice";
 import axios from "axios";
 
 const ProductManagement = () => {
   const dispatch = useDispatch();
-  const { products = [], loading, error } = useSelector(
-    (state) => state.adminProducts || {}
-  );
+  const {
+    products = [],
+    loading,
+    error
+  } = useSelector((state) => state.adminProducts || {});
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -21,7 +26,7 @@ const ProductManagement = () => {
     collections: "",
     sizes: [],
     colors: [],
-    images: [],
+    images: []
   });
   const [uploading, setUploading] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
@@ -43,13 +48,17 @@ const ProductManagement = () => {
     if (name === "sizes" || name === "colors") {
       setFormData((prev) => ({
         ...prev,
-        [name]: value.split(",").map((item) => item.trim()),
+        [name]: value.split(",").map((item) => item.trim())
       }));
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: name === "price" ? parseFloat(value) || "" : 
-                name === "countInStock" ? parseInt(value) || 0 : value, // Handle countInStock as integer
+        [name]:
+          name === "price"
+            ? parseFloat(value) || ""
+            : name === "countInStock"
+            ? parseInt(value) || 0
+            : value // Handle countInStock as integer
       }));
     }
   };
@@ -71,8 +80,8 @@ const ProductManagement = () => {
           {
             headers: {
               "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
+              Authorization: `Bearer ${token}`
+            }
           }
         );
 
@@ -82,8 +91,8 @@ const ProductManagement = () => {
           ...prevData,
           images: [
             ...prevData.images,
-            { url: data.imageUrl, altText: `${prevData.name} Image` },
-          ],
+            { url: data.imageUrl, altText: `${prevData.name} Image` }
+          ]
         }));
 
         formDataUpload.delete("image");
@@ -99,7 +108,7 @@ const ProductManagement = () => {
   const handleDeleteImage = (index) => {
     setFormData((prevData) => ({
       ...prevData,
-      images: prevData.images.filter((_, i) => i !== index),
+      images: prevData.images.filter((_, i) => i !== index)
     }));
   };
 
@@ -110,7 +119,9 @@ const ProductManagement = () => {
 
     const token = localStorage.getItem("userToken");
     if (!token) {
-      setFormError("No authentication token found. Please log in with admin credentials.");
+      setFormError(
+        "No authentication token found. Please log in with admin credentials."
+      );
       setFormLoading(false);
       return;
     }
@@ -119,8 +130,8 @@ const ProductManagement = () => {
       const config = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       };
 
       console.log("Submitting form data:", formData);
@@ -144,15 +155,19 @@ const ProductManagement = () => {
         collections: "",
         sizes: [],
         colors: [],
-        images: [],
+        images: []
       });
       dispatch(fetchAdminProducts());
     } catch (err) {
       console.error("Full error:", err);
       if (err.code === "ERR_NETWORK" || err.message === "Network Error") {
-        setFormError("Cannot connect to the backend. Is it running on port 9000?");
+        setFormError(
+          "Cannot connect to the backend. Is it running on port 9000?"
+        );
       } else if (err.response) {
-        setFormError(err.response.data.message || `Server error: ${err.response.status}`);
+        setFormError(
+          err.response.data.message || `Server error: ${err.response.status}`
+        );
       } else {
         setFormError("An unexpected error occurred. Check the console.");
       }
@@ -188,19 +203,31 @@ const ProductManagement = () => {
           <tbody>
             {products.length > 0 ? (
               products.map((product) => (
-                <tr key={product._id} className="hover:bg-gray-50 cursor-pointer">
+                <tr
+                  key={product._id}
+                  className="hover:bg-gray-50 cursor-pointer"
+                >
                   <td className="py-2 px-4">
-                    <Link to={`/product/${product._id}`} className="block w-full h-full">
+                    <Link
+                      to={`/product/${product._id}`}
+                      className="block w-full h-full"
+                    >
                       {product.name}
                     </Link>
                   </td>
                   <td className="py-2 px-4">
-                    <Link to={`/product/${product._id}`} className="block w-full h-full">
+                    <Link
+                      to={`/product/${product._id}`}
+                      className="block w-full h-full"
+                    >
                       ${product.price}
                     </Link>
                   </td>
                   <td className="py-2 px-4">
-                    <Link to={`/product/${product._id}`} className="block w-full h-full">
+                    <Link
+                      to={`/product/${product._id}`}
+                      className="block w-full h-full"
+                    >
                       {product.sku}
                     </Link>
                   </td>
@@ -338,7 +365,9 @@ const ProductManagement = () => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block font-semibold mb-2">Upload Images</label>
+                  <label className="block font-semibold mb-2">
+                    Upload Images
+                  </label>
                   <input
                     type="file"
                     onChange={handleImageUpload}

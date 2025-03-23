@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { updateOrderStatus, fetchAllOrders } from "../../redux/slices/adminOrderSlice";
+import {
+  updateOrderStatus,
+  fetchAllOrders
+} from "../../redux/slices/adminOrderSlice";
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -46,8 +49,8 @@ const OrderManagement = () => {
           <tbody>
             {orders.length > 0 ? (
               orders.map((order) => (
-                <tr 
-                  key={order._id} 
+                <tr
+                  key={order._id}
                   className="border-b hover:bg-gray-50 cursor-pointer"
                   onClick={() => handleRowClick(order._id)}
                 >
@@ -57,7 +60,9 @@ const OrderManagement = () => {
                   <td className="py-2 px-4">
                     <select
                       value={order.status}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                      onChange={(e) =>
+                        handleStatusChange(order._id, e.target.value)
+                      }
                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
                       onClick={(e) => e.stopPropagation()} // Prevent row click when selecting status
                     >
