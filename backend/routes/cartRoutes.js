@@ -21,10 +21,18 @@ const getCart = async (userId, guestId) => {
 router.post("/", async (req, res) => {
   const { productId, quantity, size, color, userId, guestId } = req.body;
   try {
-    if (!productId || !quantity) {
+    if (!productId && !quantity) {
       return res
         .status(400)
         .json({ message: "Product ID and quantity are required" });
+    }
+    if (!productId) {
+      return res.status(400).json({ message: "Product ID is required" });
+    }
+    if (!quantity || quantity <= 0) {
+      return res
+        .status(400)
+        .json({ message: "Quantity must be a positive number" });
     }
     const product = await Product.findById(productId);
     if (!product) {
@@ -59,7 +67,6 @@ router.post("/", async (req, res) => {
         0
       );
     } else {
-      // If no cart exists, create a new one
       cart = await Cart.create({
         user: userId || null,
         guestId: guestId || null,
@@ -69,8 +76,8 @@ router.post("/", async (req, res) => {
             name: product.name,
             image: product.images[0].url,
             price: product.price,
-            size: size || "N/A", // Default size if not provided
-            color: color || "N/A", // Default color if not provided
+            size: size || "N/A",
+            color: color || "N/A",
             quantity
           }
         ],
@@ -78,9 +85,7 @@ router.post("/", async (req, res) => {
       });
     }
 
-    // Save the updated cart
     await cart.save();
-
     res.status(200).json(cart);
   } catch (error) {
     console.error("Error adding to cart:", error);
@@ -88,21 +93,27 @@ router.post("/", async (req, res) => {
   }
 });
 
-// @route PUT /api/cart
+// @route PUT /api/cart/:productId
 // @desc Update product quantity in the cart
 // @access Public (with optional token)
-
 router.put("/:productId", async (req, res) => {
   const { productId, quantity, size, color, userId, guestId } = req.body;
 
   try {
-    console.log("Received userId:", userId); // Debug: Log userId
-    console.log("Received guestId:", guestId); // Debug: Log guestId
+    // Validate required fields
+    if (!productId || typeof quantity !== "number" || !size || !color) {
+      return res.status(400).json({ message: "Invalid input data" });
+    }
+
+    console.log("Received userId:", userId);
+    console.log("Received guestId:", guestId);
 
     let cart = await getCart(userId, guestId);
     console.log("Fetched cart:", cart); // Debug: Log fetched cart
 
-    if (!cart) return res.status(404).json({ message: "Cart Not Found" });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart Not Found" });
+    }
 
     const productIndex = cart.products.findIndex(
       (p) =>
@@ -118,6 +129,7 @@ router.put("/:productId", async (req, res) => {
         cart.products.splice(productIndex, 1);
       }
 
+      // Recalculate total price
       cart.totalPrice = cart.products.reduce(
         (acc, item) => acc + item.price * item.quantity,
         0
@@ -129,8 +141,10 @@ router.put("/:productId", async (req, res) => {
       return res.status(404).json({ message: "Product Not Found In Cart" });
     }
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Server Error" });
+    console.error("Error updating cart:", error.message);
+    return res.status(500).json({
+      message: "An unexpected error occurred. Please try again later."
+    });
   }
 });
 
@@ -140,7 +154,7 @@ router.put("/:productId", async (req, res) => {
 
 // @access Public
 router.delete("/:productId", async (req, res) => {
-  const { productId } = req.params; // Extract productId from URL
+  const { productId } = req.params;
   const { size, color, guestId, userId } = req.body;
 
   try {
@@ -201,14 +215,28 @@ router.post("/merge", protect, async (req, res) => {
   const { guestId } = req.body;
 
   try {
-    // find the guest cart and user cart
+    // Validate guestId
+    if (!guestId) {
+      return res.status(400).json({ message: "Guest ID is required" });
+    }
+
+    // Fetch guest cart and user cart
     const guestCart = await Cart.findOne({ guestId });
     const userCart = await Cart.findOne({ user: req.user._id });
 
     if (guestCart) {
+      // Handle empty guest cart
       if (guestCart.products.length === 0) {
-        return res.status(400).json({ message: "Guest Cart Is Empty" });
+        if (userCart) {
+          return res.status(200).json(userCart);
+        }
+        return res.status(200).json({
+          message: "Guest cart is empty, returning user cart",
+          cart: null
+        });
       }
+
+      // Merge guest cart into user cart if user cart exists
       if (userCart) {
         guestCart.products.forEach((guestItem) => {
           const productIndex = userCart.products.findIndex(
@@ -217,38 +245,51 @@ router.post("/merge", protect, async (req, res) => {
               item.size === guestItem.size &&
               item.color === guestItem.color
           );
+
           if (productIndex > -1) {
-            userCart.products[productIndex].quantity += guestItem.quantity; // Fixed typo: user.Cart -> userCart
+            userCart.products[productIndex].quantity += guestItem.quantity;
           } else {
             userCart.products.push(guestItem);
           }
         });
+
+        // Recalculate total price
         userCart.totalPrice = userCart.products.reduce(
           (acc, item) => acc + item.price * item.quantity,
           0
         );
+
         await userCart.save();
+
+        // Delete guest cart
         try {
           await Cart.findOneAndDelete({ guestId });
         } catch (error) {
-          console.log("Error Deleting Guest");
+          console.error("Error deleting guest cart:", error.message);
         }
-        res.status(200).json(userCart); // Fixed typo: usercart -> userCart
-      } else {
-        guestCart.user = req.user._id;
-        guestCart.guestId = undefined;
-        await guestCart.save();
-        res.status(200).json(guestCart);
-      }
-    } else {
-      if (userCart) {
+
         return res.status(200).json(userCart);
       }
-      res.status(404).json({ message: "Guest Cart Not Found" });
+
+      // Convert guest cart to user cart if no user cart exists
+      guestCart.user = req.user._id;
+      guestCart.guestId = undefined;
+      await guestCart.save();
+      return res.status(200).json(guestCart);
     }
+
+    // Return user cart if no guest cart exists
+    if (userCart) {
+      return res.status(200).json(userCart);
+    }
+
+    // No guest cart or user cart found
+    return res.status(404).json({ message: "Guest Cart Not Found" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error merging carts:", error.message);
+    return res.status(500).json({
+      message: "An unexpected error occurred. Please try again later."
+    });
   }
 });
 

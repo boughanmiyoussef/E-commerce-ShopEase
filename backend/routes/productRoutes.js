@@ -136,45 +136,41 @@ router.delete("/:id", protect, admin, async (req, res) => {
 // @desc    Update product stock after an order, delete if stock reaches 0
 // @access  Private/Admin
 router.put("/:id/stock", protect, admin, async (req, res) => {
-  console.log("PUT /stock called with:", {
-    id: req.params.id,
-    body: req.body,
-    user: req.user
-  });
-
   try {
     const { quantity } = req.body;
-    console.log("Quantity received:", quantity);
-
-    // Find the product by ID
     const product = await Product.findById(req.params.id);
+
     if (!product) {
-      console.log("Product not found:", req.params.id);
       return res.status(404).json({ message: "Product not found" });
     }
 
-    console.log("Product before update - countInStock:", product.countInStock);
+    console.log("Stock before deduction:", product.countInStock);
 
-    // Check if the requested quantity exceeds available stock
+    // Validate requested quantity
     if (quantity > product.countInStock) {
       return res.status(400).json({ message: "Insufficient stock" });
     }
 
-    // Update the product's stock
+    // Deduct stock
     product.countInStock -= quantity;
-    console.log("Product after update - countInStock:", product.countInStock);
 
-    // If stock reaches 0, delete the product
+    // Check if stock is negative (should never happen)
+    if (product.countInStock < 0) {
+      console.error("Stock went negative. Rolling back...");
+      return res.status(500).json({ message: "Internal server error: Stock went negative" });
+    }
+
+    // Delete product if stock reaches 0
     if (product.countInStock === 0) {
+      console.log("Deleting product due to zero stock:", product._id);
       await product.deleteOne();
-      console.log("Product deleted due to zero stock:", req.params.id);
       return res.json({
         message: "Product stock depleted and deleted",
         product
       });
     }
 
-    // Save the updated product if stock > 0
+    // Save updated product if stock > 0
     await product.save();
     console.log("Product saved successfully:", product);
 
@@ -186,7 +182,6 @@ router.put("/:id/stock", protect, admin, async (req, res) => {
   }
 });
 
-// productRoutes.js
 router.post("/orders", protect, async (req, res) => {
   try {
     const { products } = req.body;
@@ -206,10 +201,12 @@ router.post("/orders", protect, async (req, res) => {
       }
 
       // Deduct stock
+      console.log("Stock before deduction:", product.countInStock);
       product.countInStock -= item.quantity;
 
       // Delete product if stock is zero
       if (product.countInStock === 0) {
+        console.log("Deleting product due to zero stock:", product._id);
         await product.deleteOne();
       } else {
         await product.save();
@@ -230,6 +227,7 @@ router.post("/orders", protect, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 // @route GET /api/products
 // @desc get all products with optional query filters
 // @access public

@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const Checkout = require("../models/Checkout");
 const Cart = require("../models/Cart");
 const Product = require("../models/Product");
@@ -26,10 +27,8 @@ router.post("/", protect, async (req, res) => {
       paymentMethod,
       totalPrice,
       paymentStatus: "Paid",
-      isPaid: true,
+      isPaid: true
     });
-
-    
 
     console.log(`Checkout Created For User: ${req.user._id}`);
     res.status(201).json(newCheckout);
@@ -76,7 +75,9 @@ router.put("/:id/pay", protect, async (req, res) => {
     // Validate required fields
     if (!totalPrice || !paymentStatus) {
       console.error("Missing required fields:", { totalPrice, paymentStatus });
-      return res.status(400).json({ message: "Total price and payment status are required" });
+      return res
+        .status(400)
+        .json({ message: "Total price and payment status are required" });
     }
 
     // Update payment status (case-insensitive)
@@ -104,40 +105,88 @@ router.put("/:id/pay", protect, async (req, res) => {
 // @desc Finalize checkout and convert to an order after payment confirmation
 // @access Private
 router.post("/:id/finalize", protect, async (req, res) => {
-    try {
-      const checkout = await Checkout.findById(req.params.id);
-      if (checkout.isPaid && !checkout.isFinalized) {
-        // Create a final order based on the checkout details
-        const finalOrder = await Order.create({
-          user: checkout.user,
-          orderItems: checkout.checkoutItems,
-          shippingAddress: checkout.shippingAddress,
-          paymentMethod: checkout.paymentMethod,
-          totalPrice: checkout.totalPrice,
-          isPaid: true,
-          paidAt: checkout.paidAt,
-          isDelivered: false,
-          paymentStatus: checkout.paymentStatus,
-          paymentDetails: checkout.paymentDetails || {},
-        });
-  
-        // Mark the checkout as finalized
-        checkout.isFinalized = true;
-        checkout.finalizedAt = Date.now();
-        await checkout.save();
-  
-        // Delete the associated cart
-        await Cart.findOneAndDelete({ user: checkout.user });
-  
-        res.status(201).json(finalOrder);
-      } else if (checkout.isFinalized) {
-        return res.status(400).json({ message: "Checkout already finalized" });
-      } else {
-        return res.status(400).json({ message: "Checkout is not paid" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server Error" });
+  const { id } = req.params;
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const checkout = await Checkout.findById(id).session(session);
+
+    // Validate checkout
+    if (!checkout) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: "Checkout not found" });
     }
-  });
+
+    if (!checkout.isPaid) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({ message: "Checkout is not paid" });
+    }
+
+    // Validate and deduct stock for each product
+    for (const item of checkout.checkoutItems) {
+      const product = await Product.findById(item.productId).session(session);
+
+      if (!product) {
+        await session.abortTransaction();
+        session.endSession();
+        return res
+          .status(404)
+          .json({ message: `Product ${item.productId} not found` });
+      }
+
+      if (product.countInStock < item.quantity) {
+        await session.abortTransaction();
+        session.endSession();
+        return res
+          .status(400)
+          .json({ message: `Insufficient stock for ${product.name}` });
+      }
+
+      // Deduct stock
+      product.countInStock -= item.quantity;
+
+      // Mark product as out of stock if stock reaches 0
+      if (product.countInStock === 0) {
+        product.isActive = false; // Soft delete
+      }
+
+      await product.save({ session });
+    }
+
+    // Create an order from the checkout
+    const order = new Order({
+      user: checkout.user,
+      orderItems: checkout.checkoutItems,
+      shippingAddress: checkout.shippingAddress,
+      paymentMethod: checkout.paymentMethod,
+      totalPrice: checkout.totalPrice,
+      isPaid: true,
+      paidAt: Date.now(),
+      status: "Processing"
+    });
+
+    await order.save({ session });
+
+    // Mark checkout as finalized
+    checkout.isFinalized = true;
+    await checkout.save({ session });
+
+    // Commit the transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({ message: "Order finalized successfully", order });
+  } catch (error) {
+    // Abort the transaction on error
+    await session.abortTransaction();
+    session.endSession();
+
+    console.error("Error finalizing order:", error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
 module.exports = router;

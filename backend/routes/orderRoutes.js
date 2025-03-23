@@ -10,7 +10,9 @@ const router = express.Router();
 router.get("/my-orders", protect, async (req, res) => {
   try {
     // Find Orders for the authenticated user
-    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const orders = await Order.find({ user: req.user._id }).sort({
+      createdAt: -1
+    });
     // Sort By most recent orders
     res.json(orders);
   } catch (error) {
@@ -24,7 +26,10 @@ router.get("/my-orders", protect, async (req, res) => {
 // @access Private
 router.get("/:id", protect, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate("user", "name email");
+    const order = await Order.findById(req.params.id).populate(
+      "user",
+      "name email"
+    );
     if (!order) {
       return res.status(404).json({ message: "Order Not Found" });
     }
