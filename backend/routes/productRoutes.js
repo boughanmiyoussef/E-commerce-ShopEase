@@ -135,7 +135,7 @@ router.delete("/:id", protect, admin, async (req, res) => {
 // @route   PUT /api/products/:id/stock
 // @desc    Update product stock after an order, delete if stock reaches 0
 // @access  Private/Admin
-router.put("/:id/stock", protect, admin, async (req, res) => {
+router.put("/:id/stock", protect, async (req, res) => {
   try {
     const { quantity } = req.body;
     const product = await Product.findById(req.params.id);
@@ -227,7 +227,6 @@ router.post("/orders", protect, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-
 // @route GET /api/products
 // @desc get all products with optional query filters
 // @access public

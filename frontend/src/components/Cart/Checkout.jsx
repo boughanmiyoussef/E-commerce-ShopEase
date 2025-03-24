@@ -4,7 +4,7 @@ import PayPalButton from "./PayPalButton";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { createCheckout } from "../../redux/slices/checkoutSlice";
-import { updateProductStock } from "../../redux/slices/productsSlice"; // Add this import
+import { updateProductStock } from "../../redux/slices/productsSlice";
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Checkout = () => {
     city: "",
     postalCode: "",
     country: "",
-    phone: ""
+    phone: "",
   });
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
 
@@ -34,7 +34,6 @@ const Checkout = () => {
   // 1. Create Checkout Session
   const handleCreateCheckout = async (e) => {
     e.preventDefault();
-
     if (
       !shippingAddress.firstName ||
       !shippingAddress.lastName ||
@@ -47,25 +46,20 @@ const Checkout = () => {
       alert("Please fill out all shipping address fields.");
       return;
     }
-
     if (!cart || !cart.products || cart.products.length === 0) {
       alert("Your cart is empty. Add items to proceed to checkout.");
       return;
     }
-
     setIsCreatingCheckout(true);
-
     try {
       const checkoutData = {
         checkoutItems: cart.products,
         shippingAddress,
         paymentMethod: "Paypal",
-        totalPrice: cart.totalPrice
+        totalPrice: cart.totalPrice,
       };
       console.log("Checkout data:", checkoutData);
-
       const res = await dispatch(createCheckout(checkoutData));
-
       if (res.payload && res.payload._id) {
         setCheckoutId(res.payload._id);
       } else {
@@ -73,9 +67,7 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error("Error creating checkout session:", error);
-      alert(
-        "An error occurred while creating the checkout session. Please try again."
-      );
+      alert("An error occurred while creating the checkout session. Please try again.");
     } finally {
       setIsCreatingCheckout(false);
     }
@@ -88,7 +80,7 @@ const Checkout = () => {
       console.log("Payment payload:", {
         paymentStatus: "Paid",
         paymentDetails: details,
-        totalPrice: cart.totalPrice
+        totalPrice: cart.totalPrice,
       });
 
       // Send payment details to backend
@@ -97,18 +89,34 @@ const Checkout = () => {
         {
           paymentStatus: "Paid",
           paymentDetails: details,
-          totalPrice: cart.totalPrice
+          totalPrice: cart.totalPrice,
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
         }
       );
 
       if (response.status === 200) {
+        console.log("Payment update successful, starting stock updates");
+
+        // Update stock for each product
+        for (const item of cart.products) {
+          console.log("Updating stock for:", item.productId, item.quantity);
+          await dispatch(
+            updateProductStock({
+              productId: item.productId,
+              quantity: item.quantity,
+            })
+          ).unwrap();
+        }
+
+        console.log("Stock updates completed");
+
         // Finalize checkout
         await handleFinalizeCheckout(checkoutId);
+
         navigate("/order-confirmation");
       } else {
         console.error("Payment failed:", response.statusText);
@@ -124,14 +132,12 @@ const Checkout = () => {
   const handleFinalizeCheckout = async (checkoutId) => {
     try {
       await axios.post(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/checkout/${checkoutId}/finalize`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/finalize`,
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
         }
       );
     } catch (error) {
@@ -139,13 +145,6 @@ const Checkout = () => {
       throw error;
     }
   };
-
-  // Render loading/error states
-  if (loading) return <p>Loading Cart....</p>;
-  if (error) return <p>Error: {error}....</p>;
-  if (!cart || !cart.products || cart.products.length === 0) {
-    return <p>Your Cart Is Empty</p>;
-  }
 
   // Render loading/error states
   if (loading) return <p>Loading Cart....</p>;
@@ -170,6 +169,7 @@ const Checkout = () => {
               disabled
             />
           </div>
+
           {/* First Name */}
           <div className="mb-4 grid grid-cols-2 gap-4">
             <div>
@@ -178,15 +178,13 @@ const Checkout = () => {
                 type="text"
                 value={shippingAddress.firstName}
                 onChange={(e) =>
-                  setShippingAddress({
-                    ...shippingAddress,
-                    firstName: e.target.value
-                  })
+                  setShippingAddress({ ...shippingAddress, firstName: e.target.value })
                 }
                 className="w-full p-2 border rounded"
                 required
               />
             </div>
+
             {/* Last Name */}
             <div>
               <label className="block text-gray-700">Last Name</label>
@@ -194,16 +192,14 @@ const Checkout = () => {
                 type="text"
                 value={shippingAddress.lastName}
                 onChange={(e) =>
-                  setShippingAddress({
-                    ...shippingAddress,
-                    lastName: e.target.value
-                  })
+                  setShippingAddress({ ...shippingAddress, lastName: e.target.value })
                 }
                 className="w-full p-2 border rounded"
                 required
               />
             </div>
           </div>
+
           {/* Address */}
           <div className="mb-4">
             <label className="block text-gray-700">Address</label>
@@ -211,15 +207,13 @@ const Checkout = () => {
               type="text"
               value={shippingAddress.address}
               onChange={(e) =>
-                setShippingAddress({
-                  ...shippingAddress,
-                  address: e.target.value
-                })
+                setShippingAddress({ ...shippingAddress, address: e.target.value })
               }
               className="w-full p-2 border rounded"
               required
             />
           </div>
+
           {/* City */}
           <div className="mb-4">
             <label className="block text-gray-700">City</label>
@@ -233,6 +227,7 @@ const Checkout = () => {
               required
             />
           </div>
+
           {/* Postal Code */}
           <div className="mb-4">
             <label className="block text-gray-700">Postal Code</label>
@@ -240,15 +235,13 @@ const Checkout = () => {
               type="text"
               value={shippingAddress.postalCode}
               onChange={(e) =>
-                setShippingAddress({
-                  ...shippingAddress,
-                  postalCode: e.target.value
-                })
+                setShippingAddress({ ...shippingAddress, postalCode: e.target.value })
               }
               className="w-full p-2 border rounded"
               required
             />
           </div>
+
           {/* Country */}
           <div className="mb-4">
             <label className="block text-gray-700">Country</label>
@@ -256,15 +249,13 @@ const Checkout = () => {
               type="text"
               value={shippingAddress.country}
               onChange={(e) =>
-                setShippingAddress({
-                  ...shippingAddress,
-                  country: e.target.value
-                })
+                setShippingAddress({ ...shippingAddress, country: e.target.value })
               }
               className="w-full p-2 border rounded"
               required
             />
           </div>
+
           {/* Phone */}
           <div className="mb-4">
             <label className="block text-gray-700">Phone</label>
@@ -272,15 +263,13 @@ const Checkout = () => {
               type="tel"
               value={shippingAddress.phone}
               onChange={(e) =>
-                setShippingAddress({
-                  ...shippingAddress,
-                  phone: e.target.value
-                })
+                setShippingAddress({ ...shippingAddress, phone: e.target.value })
               }
               className="w-full p-2 border rounded"
               required
             />
           </div>
+
           {/* Submit Button */}
           <div className="mt-6">
             {!checkoutId ? (
@@ -310,9 +299,7 @@ const Checkout = () => {
         <h3 className="text-lg mb-4">Order Summary</h3>
         <div className="border-t py-4 mb-4">
           {cart?.products?.map((product, index) => {
-            const productTotalPrice = (
-              product.price * product.quantity
-            ).toFixed(2);
+            const productTotalPrice = (product.price * product.quantity).toFixed(2);
             return (
               <div
                 key={index}
@@ -328,9 +315,7 @@ const Checkout = () => {
                     <h3 className="text-md font-medium">{product.name}</h3>
                     <p className="text-gray-500">Size: {product.size}</p>
                     <p className="text-gray-500">Color: {product.color}</p>
-                    <p className="text-gray-500">
-                      Quantity: {product.quantity}
-                    </p>
+                    <p className="text-gray-500">Quantity: {product.quantity}</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -356,9 +341,7 @@ const Checkout = () => {
           </div>
           <div className="flex justify-between mb-2">
             <p className="text-lg font-semibold">Total</p>
-            <p className="text-lg font-semibold">
-              ${cart.totalPrice?.toFixed(2)}
-            </p>
+            <p className="text-lg font-semibold">${cart.totalPrice?.toFixed(2)}</p>
           </div>
         </div>
       </div>
