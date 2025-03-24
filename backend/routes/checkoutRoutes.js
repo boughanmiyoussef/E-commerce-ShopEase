@@ -136,7 +136,13 @@ router.post("/:id/finalize", protect, async (req, res) => {
 
       // Deduct stock
       product.countInStock -= item.quantity;
-      await product.save({ session });
+
+      // If stock reaches zero, delete the product
+      if (product.countInStock <= 0) {
+        await Product.findByIdAndDelete(item.productId).session(session);
+      } else {
+        await product.save({ session });
+      }
     }
 
     // Finalize checkout and create order

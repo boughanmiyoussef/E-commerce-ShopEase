@@ -82,9 +82,9 @@ const Checkout = () => {
         paymentDetails: details,
         totalPrice: cart.totalPrice,
       });
-
-      // Send payment details to backend
-      const response = await axios.put(
+  
+      // Update payment status
+      await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`,
         {
           paymentStatus: "Paid",
@@ -97,33 +97,13 @@ const Checkout = () => {
           },
         }
       );
-
-      if (response.status === 200) {
-        console.log("Payment update successful, starting stock updates");
-
-        // Update stock for each product
-        for (const item of cart.products) {
-          console.log("Updating stock for:", item.productId, item.quantity);
-          await dispatch(
-            updateProductStock({
-              productId: item.productId,
-              quantity: item.quantity,
-            })
-          ).unwrap();
-        }
-
-        console.log("Stock updates completed");
-
-        // Finalize checkout
-        await handleFinalizeCheckout(checkoutId);
-
-        navigate("/order-confirmation");
-      } else {
-        console.error("Payment failed:", response.statusText);
-        alert("Payment failed. Please try again.");
-      }
+  
+      console.log("Finalizing checkout ID:", checkoutId);
+      await handleFinalizeCheckout(checkoutId);
+  
+      navigate("/order-confirmation");
     } catch (error) {
-      console.error("Payment error:", error.response?.data || error.message);
+      console.error("Payment error:", error);
       alert("Payment error. Please try again.");
     }
   };
@@ -131,7 +111,7 @@ const Checkout = () => {
   // 3. Finalize Checkout
   const handleFinalizeCheckout = async (checkoutId) => {
     try {
-      await axios.post(
+      const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/finalize`,
         {},
         {
@@ -140,9 +120,19 @@ const Checkout = () => {
           },
         }
       );
+  
+      if (response.status === 200) {
+        navigate("/order-confirmation");
+      } else {
+        alert("Failed to finalize checkout. Please try again.");
+      }
     } catch (error) {
       console.error("Finalization error:", error);
-      throw error;
+      if (error.response?.data?.message?.includes("Product not found")) {
+        alert("One or more products in your cart are no longer available. Please update your cart.");
+      } else {
+        alert("Finalization error. Please try again.");
+      }
     }
   };
 

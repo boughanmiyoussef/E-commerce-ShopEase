@@ -144,41 +144,22 @@ router.put("/:id/stock", protect, async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    console.log("Stock before deduction:", product.countInStock);
-
-    // Validate requested quantity
-    if (quantity > product.countInStock) {
-      return res.status(400).json({ message: "Insufficient stock" });
-    }
-
     // Deduct stock
     product.countInStock -= quantity;
 
-    // Check if stock is negative (should never happen)
-    if (product.countInStock < 0) {
-      console.error("Stock went negative. Rolling back...");
-      return res.status(500).json({ message: "Internal server error: Stock went negative" });
+    // If stock reaches zero, delete the product
+    if (product.countInStock <= 0) {
+      await Product.findByIdAndDelete(req.params.id);
+      return res.status(200).json({ message: "Product stock reached zero. Product deleted." });
     }
 
-    // Delete product if stock reaches 0
-    if (product.countInStock === 0) {
-      console.log("Deleting product due to zero stock:", product._id);
-      await product.deleteOne();
-      return res.json({
-        message: "Product stock depleted and deleted",
-        product
-      });
-    }
-
-    // Save updated product if stock > 0
+    // Save the updated product
     await product.save();
-    console.log("Product saved successfully:", product);
 
-    // Return success response
-    res.json({ message: "Stock updated successfully", product });
+    res.status(200).json(product);
   } catch (error) {
-    console.error("Error in stock update:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    console.error("Error updating stock:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
