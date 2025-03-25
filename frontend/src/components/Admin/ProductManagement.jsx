@@ -21,9 +21,10 @@ const ProductManagement = () => {
     price: "",
     sku: "",
     countInStock: 0,
-    category: "Uncategorized", // Already present
+    category: "Uncategorized",
     isPublished: true,
     collections: "",
+    gender: "",
     sizes: [],
     colors: [],
     images: []
@@ -153,6 +154,7 @@ const ProductManagement = () => {
         category: "Uncategorized",
         isPublished: true,
         collections: "",
+        gender: "",
         sizes: [],
         colors: [],
         images: []
@@ -312,7 +314,7 @@ const ProductManagement = () => {
                     name="countInStock"
                     value={formData.countInStock}
                     onChange={handleChange}
-                    placeholder="Quantity in Stock"
+                    placeholder="Quantity"
                     className="w-full p-2 border rounded"
                     min="0"
                     required
@@ -331,6 +333,21 @@ const ProductManagement = () => {
                     <option value="Bottom Wear">Bottom Wear</option>
                   </select>
                 </div>
+
+                <div className="mb-4">
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    required
+                  >
+                    <option value="Uncategorized">Uncategorized</option>
+                    <option value="Men">Men</option>
+                    <option value="Women">Women</option>
+                  </select>
+                </div>
+
                 <div className="mb-4">
                   <input
                     type="text"
@@ -342,6 +359,7 @@ const ProductManagement = () => {
                     required
                   />
                 </div>
+
                 <div className="mb-4">
                   <input
                     type="text"

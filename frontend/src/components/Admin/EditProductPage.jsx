@@ -166,6 +166,35 @@ const EditProductPage = () => {
           />
         </div>
 
+        <div className="mb-4">
+          <label className="block font-semibold mb-2">Gender</label>
+          <select
+            name="gender"
+            value={productData.gender}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value="Men">Men</option>
+            <option value="Women">Women</option>
+          </select>
+        </div>
+
+        {/* Category */}
+        <div className="mb-4">
+          <label className="block font-semibold mb-2">category</label>
+          <select
+            name="category"
+            value={productData.category}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          >
+            <option value="Top Wear">Top Wear</option>
+            <option value="Bottom Wear">Bottom Wear</option>
+          </select>
+        </div>
+
         {/* Count In Stock */}
         <div className="mb-6">
           <label className="block font-semibold mb-2">Count In Stock</label>
