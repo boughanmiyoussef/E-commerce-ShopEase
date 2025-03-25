@@ -4,7 +4,7 @@ import PayPalButton from "./PayPalButton";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { createCheckout } from "../../redux/slices/checkoutSlice";
-import { updateProductStock } from "../../redux/slices/productsSlice";
+import { updateProductStock } from "../../redux/slices/productsSlice"; // Add this import
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -14,8 +14,6 @@ const Checkout = () => {
 
   const [checkoutId, setCheckoutId] = useState(null);
   const [shippingAddress, setShippingAddress] = useState({
-    firstName: "",
-    lastName: "",
     address: "",
     city: "",
     postalCode: "",
@@ -34,9 +32,8 @@ const Checkout = () => {
   // 1. Create Checkout Session
   const handleCreateCheckout = async (e) => {
     e.preventDefault();
+
     if (
-      !shippingAddress.firstName ||
-      !shippingAddress.lastName ||
       !shippingAddress.address ||
       !shippingAddress.city ||
       !shippingAddress.postalCode ||
@@ -46,11 +43,14 @@ const Checkout = () => {
       alert("Please fill out all shipping address fields.");
       return;
     }
+
     if (!cart || !cart.products || cart.products.length === 0) {
       alert("Your cart is empty. Add items to proceed to checkout.");
       return;
     }
+
     setIsCreatingCheckout(true);
+
     try {
       const checkoutData = {
         checkoutItems: cart.products,
@@ -59,7 +59,9 @@ const Checkout = () => {
         totalPrice: cart.totalPrice,
       };
       console.log("Checkout data:", checkoutData);
+
       const res = await dispatch(createCheckout(checkoutData));
+
       if (res.payload && res.payload._id) {
         setCheckoutId(res.payload._id);
       } else {
@@ -82,9 +84,9 @@ const Checkout = () => {
         paymentDetails: details,
         totalPrice: cart.totalPrice,
       });
-  
-      // Update payment status
-      await axios.put(
+
+      // Send payment details to backend
+      const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`,
         {
           paymentStatus: "Paid",
@@ -97,13 +99,17 @@ const Checkout = () => {
           },
         }
       );
-  
-      console.log("Finalizing checkout ID:", checkoutId);
-      await handleFinalizeCheckout(checkoutId);
-  
-      navigate("/order-confirmation");
+
+      if (response.status === 200) {
+        // Finalize checkout
+        await handleFinalizeCheckout(checkoutId);
+        navigate("/order-confirmation");
+      } else {
+        console.error("Payment failed:", response.statusText);
+        alert("Payment failed. Please try again.");
+      }
     } catch (error) {
-      console.error("Payment error:", error);
+      console.error("Payment error:", error.response?.data || error.message);
       alert("Payment error. Please try again.");
     }
   };
@@ -111,7 +117,7 @@ const Checkout = () => {
   // 3. Finalize Checkout
   const handleFinalizeCheckout = async (checkoutId) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/finalize`,
         {},
         {
@@ -120,21 +126,18 @@ const Checkout = () => {
           },
         }
       );
-  
-      if (response.status === 200) {
-        navigate("/order-confirmation");
-      } else {
-        alert("Failed to finalize checkout. Please try again.");
-      }
     } catch (error) {
       console.error("Finalization error:", error);
-      if (error.response?.data?.message?.includes("Product not found")) {
-        alert("One or more products in your cart are no longer available. Please update your cart.");
-      } else {
-        alert("Finalization error. Please try again.");
-      }
+      throw error;
     }
   };
+
+  // Render loading/error states
+  if (loading) return <p>Loading Cart....</p>;
+  if (error) return <p>Error: {error}....</p>;
+  if (!cart || !cart.products || cart.products.length === 0) {
+    return <p>Your Cart Is Empty</p>;
+  }
 
   // Render loading/error states
   if (loading) return <p>Loading Cart....</p>;
@@ -159,37 +162,19 @@ const Checkout = () => {
               disabled
             />
           </div>
-
-          {/* First Name */}
-          <div className="mb-4 grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-gray-700">First Name</label>
-              <input
-                type="text"
-                value={shippingAddress.firstName}
-                onChange={(e) =>
-                  setShippingAddress({ ...shippingAddress, firstName: e.target.value })
-                }
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-
-            {/* Last Name */}
-            <div>
-              <label className="block text-gray-700">Last Name</label>
-              <input
-                type="text"
-                value={shippingAddress.lastName}
-                onChange={(e) =>
-                  setShippingAddress({ ...shippingAddress, lastName: e.target.value })
-                }
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Name</label>
+            <input
+              type="name"
+              value={user?.name || ""}
+              className="w-full p-2 border rounded"
+              disabled
+            />
           </div>
-
+          <div className="mb-4 grid grid-cols-2 gap-4">
+        
+          
+          </div>
           {/* Address */}
           <div className="mb-4">
             <label className="block text-gray-700">Address</label>
@@ -203,7 +188,6 @@ const Checkout = () => {
               required
             />
           </div>
-
           {/* City */}
           <div className="mb-4">
             <label className="block text-gray-700">City</label>
@@ -217,7 +201,6 @@ const Checkout = () => {
               required
             />
           </div>
-
           {/* Postal Code */}
           <div className="mb-4">
             <label className="block text-gray-700">Postal Code</label>
@@ -231,7 +214,6 @@ const Checkout = () => {
               required
             />
           </div>
-
           {/* Country */}
           <div className="mb-4">
             <label className="block text-gray-700">Country</label>
@@ -245,7 +227,6 @@ const Checkout = () => {
               required
             />
           </div>
-
           {/* Phone */}
           <div className="mb-4">
             <label className="block text-gray-700">Phone</label>
@@ -259,7 +240,6 @@ const Checkout = () => {
               required
             />
           </div>
-
           {/* Submit Button */}
           <div className="mt-6">
             {!checkoutId ? (
