@@ -182,7 +182,7 @@ const EditProductPage = () => {
 
         {/* Category */}
         <div className="mb-4">
-          <label className="block font-semibold mb-2">category</label>
+          <label className="block font-semibold mb-2">Category</label>
           <select
             name="category"
             value={productData.category}
