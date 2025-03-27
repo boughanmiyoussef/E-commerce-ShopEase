@@ -145,7 +145,7 @@ Create a `.env` file in the backend directory with the following content:
 
 ## Payment System
 
-ShopEase integrates a **cash on delivery (COD)** payment system to ensure user-friendly and accessible transactions. During checkout, users can select the COD option to place their orders without requiring immediate online payment. This method enhances trust and encourages more users to complete their purchases.
+ShopEase integrates a **Paypal** payment system to ensure user-friendly and accessible transactions. During checkout, users can select the PayPal option to place their orders. This method enhances trust and encourages more users to complete their purchases.
 
 ---
 
