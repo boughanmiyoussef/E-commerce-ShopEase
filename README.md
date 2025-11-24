@@ -24,6 +24,25 @@ ShopEase is a modern e-commerce platform designed to simplify online shopping fo
 
 ---
 
+<p align="center">
+  <img src="./images/Landingpage.png" alt="ShopEase Landing Page" width="800"/>
+  <br/>
+  <em>📸 Landing Page</em>
+</p>
+
+<p align="center">
+  <img src="./images/Landingpage1.png" alt="ShopEase Landing Page" width="800"/>
+  <br/>
+  <em>📸 Landing Page</em>
+</p>
+
+<p align="center">
+  <img src="./images/Landingpage2.png" alt="ShopEase Landing Page" width="800"/>
+  <br/>
+  <em>📸 Landing Page</em>
+</p>
+
+
 ## Features
 
 ### For Users:
