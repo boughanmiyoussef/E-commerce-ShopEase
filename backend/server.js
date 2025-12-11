@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+// Load environment variables IMMEDIATELY
+dotenv.config();
+
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
 const productRoutes = require("./routes/productRoutes");
@@ -23,9 +26,6 @@ app.use(
     credentials: true
   })
 );
-app.use(express.json());
-
-dotenv.config();
 
 const PORT = process.env.PORT || 9000;
 
