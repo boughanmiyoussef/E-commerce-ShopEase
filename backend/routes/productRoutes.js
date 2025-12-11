@@ -208,11 +208,14 @@ router.post("/orders", protect, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 // @route GET /api/products
 // @desc get all products with optional query filters
 // @access public
 router.get("/", async (req, res) => {
   try {
+        console.log("=== PRODUCTS API CALLED ===");
+        console.log("Query parameters:", req.query);
     const {
       collection,
       size,
