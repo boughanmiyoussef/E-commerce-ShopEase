@@ -25,22 +25,49 @@ ShopEase is a modern e-commerce platform designed to simplify online shopping fo
 ---
 
 <p align="center">
-  <img src="./images/Landingpage.png" alt="ShopEase Landing Page" width="800"/>
+  <img src="./images/Shopease7.png" alt="ShopEase Landing Page" width="800"/>
   <br/>
   <em>📸 Landing Page</em>
 </p>
 
 <p align="center">
-  <img src="./images/Landingpage1.png" alt="ShopEase Landing Page" width="800"/>
+  <img src="./images/Shopease4.png" alt="ShopEase Landing Page" width="800"/>
   <br/>
   <em>📸 Landing Page</em>
 </p>
 
 <p align="center">
-  <img src="./images/Landingpage2.png" alt="ShopEase Landing Page" width="800"/>
+  <img src="./images/Shopease6.png" alt="ShopEase Landing Page" width="800"/>
   <br/>
   <em>📸 Landing Page</em>
 </p>
+
+<p align="center">
+  <img src="./images/Shopease5.png" alt="ShopEase Landing Page" width="800"/>
+  <br/>
+  <em>📸 Landing Page</em>
+</p>
+
+<p align="center">
+  <img src="./images/Shopease3.png" alt="ShopEase Landing Page" width="800"/>
+  <br/>
+  <em>📸 Shop</em>
+</p>
+
+<p align="center">
+  <img src="./images/Shopease2.png" alt="ShopEase Landing Page" width="800"/>
+  <br/>
+  <em>📸 Login</em>
+</p>
+
+
+<p align="center">
+  <img src="./images/Shopease1.png" alt="ShopEase Landing Page" width="800"/>
+  <br/>
+  <em>📸 Payment</em>
+</p>
+
+
 
 
 ## Features
